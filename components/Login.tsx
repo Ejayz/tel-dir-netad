@@ -2,11 +2,15 @@
 import { Form, Formik } from "formik";
 import * as yup from "yup";
 import { TextInput } from "./ui/InputFields";
+import { useRouter } from "next/navigation";
+
 export default function Login() {
   const loginValidation = yup.object({
     username: yup.string().required(),
     password: yup.string().required(),
   });
+
+const navigate = useRouter()
 
   return (
     <>
@@ -26,22 +30,34 @@ export default function Login() {
                 username: "",
                 password: "",
               }}
-              onSubmit={(values) => {
+              onSubmit={async (values) => {
+                let headersList = {
+                  Accept: "*/*",
+                  "Content-Type": "application/json",
+                };
 
-                
+                let bodyContent = JSON.stringify({
+                  username: values.username,
+                  password: values.password,
+                });
 
+                let response = await fetch("/api/authentication", {
+                  method: "POST",
+                  body: bodyContent,
+                  headers: headersList,
+                });
 
-
+                let data = await response.json();
+                if (data.status == 200) {
+                  alert(data.statusText);
+                } else {
+                  alert(data.statusText);
+                  navigate.push("/dashboard");
+                }
               }}
               validationSchema={loginValidation}
             >
-              {({
-                values,
-                errors,
-                handleChange,
-                handleSubmit,
-                touched,
-              }) => (
+              {({ values, errors, handleChange, handleSubmit, touched }) => (
                 <Form className="card-body">
                   <fieldset className="fieldset">
                     <TextInput
@@ -53,7 +69,7 @@ export default function Login() {
                       placeholder="Username"
                       touched={touched.username}
                     ></TextInput>
-                     <TextInput
+                    <TextInput
                       handleChange={handleChange}
                       label="Password"
                       name="password"

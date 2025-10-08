@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as bcrypt from "bcrypt";
 import { getPool } from "@/libs/db";
+import { JWTGenerator } from "@/libs/Tools";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 export async function POST(req: NextRequest) {
   const { username, password } = await req.json();
 
@@ -31,10 +36,30 @@ export async function POST(req: NextRequest) {
   );
 
   if (validateAccount) {
+    const authenticationKey = await JWTGenerator(
+      {
+        uuid: query.rows[0]?.uuid,
+        username: query.rows[0]?.username,
+        email: query.rows[0]?.email,
+        first_name: query.rows[0]?.first_name,
+        middle_name: query.rows[0]?.middle_name,
+        last_name: query.rows[0]?.last_name,
+        created_at: query.rows[0]?.created_at,
+      },
+      process.env.KEY || "",
+      { expiresIn: "24h" }
+    );
+
     return NextResponse.json({
       status: 200,
       statusText: `Welcome ${username}.`,
+    }).cookies.set("token", authenticationKey, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60,
     });
+
+    
   } else {
     return NextResponse.json({
       status: 401,
