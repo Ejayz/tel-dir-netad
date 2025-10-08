@@ -1,23 +1,74 @@
-"use client"
+"use client";
 
-export default function DirectorySearch(){
-return <>
-<label className="input">
-  <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <g
-      strokeLinejoin="round"
-      strokeLinecap="round"
-      strokeWidth="2.5"
-      fill="none"
-      stroke="currentColor"
-    >
-      <circle cx="11" cy="11" r="8"></circle>
-      <path d="m21 21-4.3-4.3"></path>
-    </g>
-  </svg>
-  <input type="search" className="grow" placeholder="Search" />
-  <kbd className="kbd kbd-sm">⌘</kbd>
-  <kbd className="kbd kbd-sm">K</kbd>
-</label>
-</>
+export default function DirectorySearch() {
+  return (
+    <>
+      <div className="w-full flex flex-row justify-items-center p-4">
+        <label className="input flex-1">
+          <svg
+            className="h-[1em] opacity-50"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <g
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeWidth="2.5"
+              fill="none"
+              stroke="currentColor"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </g>
+          </svg>
+          <input type="search" className="grow" placeholder="Search" />
+          <kbd className="kbd kbd-sm">⌘</kbd>
+          <kbd className="kbd kbd-sm">K</kbd>
+        </label>
+
+        <a href="/login" className="btn btn-outline mx-4">Login</a>
+      </div>
+      <div className="divider"></div>
+      <div className="overflow-x-auto w-full">
+        <table className="table table-zebra">
+          {/* head */}
+          <thead>
+            <tr>
+              <th>Local</th>
+              <th>Department</th>
+              <th>Group</th>
+              <th>Location</th>
+              <th>Telephone System</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* row 1 */}
+            <tr>
+              <th>3907</th>
+              <td>MIS</td>
+              <td>Network Administrator</td>
+              <td>KMG</td>
+              <td>NEC</td>
+            </tr>
+            {/* row 2 */}
+            <tr>
+              <th>2</th>
+              <td>Hart Hagerty</td>
+              <td>Desktop Support Technician</td>
+              <td>Purple</td>
+              <td>NEC</td>
+            </tr>
+            {/* row 3 */}
+            <tr>
+              <th>3</th>
+              <td>Brice Swyre</td>
+              <td>Tax Accountant</td>
+              <td>Red</td>
+              <td>NEC</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
 }
