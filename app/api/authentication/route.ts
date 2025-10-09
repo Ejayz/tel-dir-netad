@@ -1,16 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as bcrypt from "bcrypt";
-import { getPool } from "@/libs/db";
+import { pool } from "@/libs/db";
 import { JWTGenerator } from "@/libs/Tools";
 import * as dotenv from "dotenv";
-
+import { QueryResult, ResultSetHeader, RowDataPacket } from "mysql2";
 dotenv.config();
 
+interface User extends RowDataPacket{
+  uuid:number,
+  username:string,
+  password:string,
+  email:string,
+  first_name:string,
+  middle_name:String,
+  last_name:string,
+  created_at:string
+}
+
+  
 export async function POST(req: NextRequest) {
   const { username, password } = await req.json();
 
-  const pool = await getPool();
-  const conn = await pool.connect();
+
 
   if (username == "" || password == "") {
     return NextResponse.json(
@@ -25,41 +36,39 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const query = await conn.query(
-    "SELECT * FROM tel_dir.tbl_users WHERE username=$1  and is_exist=true",
-    [username]
-  );
+  const prep = "SELECT * FROM tbl_user WHERE username=?  and is_exist=true"
+  const [rows,fields] = await pool.execute<User[]>(prep,[username])
 
   const validateAccount = bcrypt.compareSync(
     password,
-    query.rows[0]?.password || ""
+    rows[0].password
   );
 
   if (validateAccount) {
     const authenticationKey = await JWTGenerator(
       {
-        uuid: query.rows[0]?.uuid,
-        username: query.rows[0]?.username,
-        email: query.rows[0]?.email,
-        first_name: query.rows[0]?.first_name,
-        middle_name: query.rows[0]?.middle_name,
-        last_name: query.rows[0]?.last_name,
-        created_at: query.rows[0]?.created_at,
+        uuid: rows[0]?.uuid,
+        username: rows[0]?.username,
+        email: rows[0]?.email,
+        first_name: rows[0]?.first_name,
+        middle_name: rows[0]?.middle_name,
+        last_name: rows[0]?.last_name,
+        created_at: rows[0]?.created_at,
       },
       process.env.KEY || "",
       { expiresIn: "24h" }
     );
 
-    return NextResponse.json({
+    const response=  NextResponse.json({
       status: 200,
       statusText: `Welcome ${username}.`,
-    }).cookies.set("token", authenticationKey, {
+    })
+    response.cookies.set("token", authenticationKey, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60,
     });
-
-    
+    return response
   } else {
     return NextResponse.json({
       status: 401,
