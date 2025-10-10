@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import * as jose from "jose";
 export async function middleware(request: NextRequest) {
-  const jwtSecret = process.env.JWT_SECRET || "";
+  const jwtSecret = process.env.KEY || "";
   const routerIP = process.env.ROUTER_IP || "";
   if (request.nextUrl.pathname == "/") {
     if (request.cookies.get("token")?.value) {

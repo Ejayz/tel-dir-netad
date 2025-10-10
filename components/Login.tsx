@@ -1,7 +1,7 @@
 "use client";
 import { Form, Formik } from "formik";
 import * as yup from "yup";
-import { TextInput } from "./ui/InputFields";
+import { PasswordInput, TextInput } from "./ui/InputFields";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
@@ -53,6 +53,7 @@ const navigate = useRouter()
                 } else {
                   alert(data.statusText);
                   navigate.push("/dashboard");
+                  navigate.forward()
                 }
               }}
               validationSchema={loginValidation}
@@ -69,7 +70,7 @@ const navigate = useRouter()
                       placeholder="Username"
                       touched={touched.username}
                     ></TextInput>
-                    <TextInput
+                    <PasswordInput
                       handleChange={handleChange}
                       label="Password"
                       name="password"
@@ -77,7 +78,7 @@ const navigate = useRouter()
                       errors={errors.password}
                       placeholder="Password"
                       touched={touched.password}
-                    ></TextInput>
+                    ></PasswordInput>
                     <div>
                       <a className="link link-hover">Forgot password?</a>
                     </div>
