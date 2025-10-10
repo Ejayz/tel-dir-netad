@@ -3,6 +3,7 @@ import { Form, Formik } from "formik";
 import * as yup from "yup";
 import { PasswordInput, TextInput } from "./ui/InputFields";
 import { useRouter } from "next/navigation";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 export default function Login() {
   const loginValidation = yup.object({
@@ -48,17 +49,19 @@ const navigate = useRouter()
                 });
 
                 let data = await response.json();
+                console.log(data)
                 if (data.status == 200) {
-                  alert(data.statusText);
+                 toast(data.statusText);
+                  setTimeout(()=>{
+                    navigate.push("/dashboard");
+                  },1500)
                 } else {
-                  alert(data.statusText);
-                  navigate.push("/dashboard");
-                  navigate.forward()
+                   toast.error(data.statusText)
                 }
               }}
               validationSchema={loginValidation}
             >
-              {({ values, errors, handleChange, handleSubmit, touched }) => (
+              {({ values, errors, handleChange, handleSubmit, touched,isSubmitting}) => (
                 <Form className="card-body">
                   <fieldset className="fieldset">
                     <TextInput
@@ -82,8 +85,10 @@ const navigate = useRouter()
                     <div>
                       <a className="link link-hover">Forgot password?</a>
                     </div>
-                    <button type="submit" className="btn btn-neutral mt-4">
-                      Login
+                    <button type="submit" className={`btn ${!isSubmitting?"btn-neutral":"btn-disabled"} mt-4`}>
+                      {
+                        !isSubmitting?<>Log In</>:<div className="loading-infinity loading loading-xl"></div>
+                      }
                     </button>
                   </fieldset>
                 </Form>
@@ -92,6 +97,18 @@ const navigate = useRouter()
           </div>
         </div>
       </div>
+      <ToastContainer  
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick={false}
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+      transition={Bounce} />
     </>
   );
 }

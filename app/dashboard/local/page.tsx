@@ -1,4 +1,5 @@
 import { Navigations } from "@/components/Navigations";
+import Local from "@/components/views/Local";
 import { Statistics } from "@/components/views/Statistics";
 import { Bounce, ToastContainer } from "react-toastify";
 
@@ -7,7 +8,7 @@ export default function Home() {
     <div className="font-mono flex flex-col items-center justify-items-center min-h-screen">
       <main className="flex flex-col  items-center min-h-screen min-w-full sm:items-start">
       <Navigations>
-        <Statistics></Statistics>
+        <Local/>
       </Navigations>
        <ToastContainer
 position="top-right"
