@@ -1,7 +1,15 @@
+
+import { Field } from "formik";
 import { useState } from "react";
 import { IoWarningOutline } from "react-icons/io5";
 import { LiaEyeSlashSolid, LiaEyeSolid } from "react-icons/lia";
 import { MdAlternateEmail } from "react-icons/md";
+
+interface Select {
+  id:string|number,
+  placeholder:string
+}
+
 
 export function TextInput({
   values,
@@ -159,6 +167,60 @@ export function EmailInput({
           placeholder={placeholder}
         />
       </div>
+      {errors && touched && (
+        <div className="flex flex-row items-center mt-1">
+          <IoWarningOutline className="text-warning text-base mr-1" />
+          <p className="text-sm text-warning mt-1">{errors}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+export function SelectInput({
+  values,
+  handleChange,
+  name,
+  label,
+  placeholder,
+  errors,
+  touched,
+  options
+}: {
+  values: any;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  name: string;
+  label: string;
+  placeholder?: string;
+  errors?: any;
+  touched?: any;
+  options:Select[]
+}) {
+  return (
+    <div className="form-control">
+      <label className={`label ${values ? "block" : "invisible"}`}>
+        <span className="label-text">{label}</span>
+      </label>
+      <Field as="select"
+        type="text"
+        name={name}
+        value={values}
+        onChange={handleChange}
+        className={`select select-bordered  indent-5 w-full ${
+          errors && touched ? "select-warning placeholder:text-warning" : ""
+        } `}
+        placeholder={placeholder}
+      >
+        <option value={""}>{placeholder}</option>
+         {options &&
+          options.length > 0 &&
+          options.map((value, index) => (
+            <option key={index} value={value.id}>
+              {value.placeholder}
+            </option>
+          ))}
+        </Field>
       {errors && touched && (
         <div className="flex flex-row items-center mt-1">
           <IoWarningOutline className="text-warning text-base mr-1" />

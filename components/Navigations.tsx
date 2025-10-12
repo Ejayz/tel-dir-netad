@@ -1,26 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Bounce, ToastContainer } from "react-toastify";
-import Cookies from "js-cookie";
-import { ReturnToken } from "@/libs/Tools";
-import * as jwt from "jsonwebtoken";
-import { useRouter } from "next/navigation";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FaRegUserCircle } from "react-icons/fa";
+import { Bounce, ToastContainer } from "react-toastify";
 
 export function Navigations({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [userInfo, setUserInfo] = useState<any>(null);
-  const router = useRouter();
-  useEffect(() => {
-    setUserInfo(jwt.decode(Cookies.get("token") || ""));
-  }, [userInfo != null]);
-  return userInfo == null ? (
-    <></>
-  ) : (
+  const queryClient = new QueryClient();
+
+  return (
     <div className="drawer">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
@@ -61,7 +52,7 @@ export function Navigations({
                   <summary>Management</summary>
                   <ul className="bg-base-100 rounded-t-none p-2">
                     <li>
-                      <a href="/dashboard/local">Local</a>
+                      <a href="/local">Local</a>
                     </li>
                     <li>
                       <a>Group</a>
@@ -70,7 +61,7 @@ export function Navigations({
                       <a>Department</a>
                     </li>
                     <li>
-                      <a>Location</a>
+                      <a href="/location">Location</a>
                     </li>
                   </ul>
                 </details>
@@ -114,7 +105,22 @@ export function Navigations({
           </div>
         </div>
         {/* Page content here */}
-        {children}
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition={Bounce}
+        />
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
       </div>
       <div className="drawer-side">
         <label

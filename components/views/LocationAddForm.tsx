@@ -1,11 +1,8 @@
-import { BsFillTelephoneOutboundFill } from "react-icons/bs";
-import { AddLocalModal } from "./AddLocalModal";
+import { FaMapLocation } from "react-icons/fa6";
 
-export default function Local() {
+export default function LocationAddForm() {
   return (
     <div className="w-11/12 mx-auto">
-      <AddLocalModal></AddLocalModal>
-
       <div>
         <div className="breadcrumbs text-sm">
           <ul>
@@ -13,7 +10,7 @@ export default function Local() {
               <a>Dashboard</a>
             </li>
             <li>
-              <a>Local Management</a>
+              <a>Location Management</a>
             </li>
           </ul>
         </div>
@@ -42,13 +39,10 @@ export default function Local() {
         </label>
 
         <div className="flex-5 flex flex-col items-end">
-          <label
-            htmlFor="my_modal_6"
-            className="btn items rounded-md btn-outline btn-primary"
-          >
-            <BsFillTelephoneOutboundFill className="" />
-            New Local
-          </label>
+          <button className="btn items rounded-md btn-outline btn-primary">
+            <FaMapLocation />
+            New Location
+          </button>
         </div>
       </div>
       <div className="divider"></div>
