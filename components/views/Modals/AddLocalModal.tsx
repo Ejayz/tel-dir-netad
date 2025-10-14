@@ -2,7 +2,7 @@
 
 import { Formik, Form } from "formik";
 import { toast } from "react-toastify";
-import { TextInput, PasswordInput, SelectInput } from "../ui/InputFields";
+import { TextInput, PasswordInput, SelectInput } from "../../ui/InputFields";
 
 export function AddLocalModal() {
   return (

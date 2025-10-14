@@ -1,5 +1,5 @@
 import { BsFillTelephoneOutboundFill } from "react-icons/bs";
-import { AddLocalModal } from "./AddLocalModal";
+import { AddLocalModal } from "./Modals/AddLocalModal";
 
 export default function Local() {
   return (

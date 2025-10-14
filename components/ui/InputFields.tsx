@@ -230,3 +230,46 @@ export function SelectInput({
     </div>
   );
 }
+
+
+export function TextInputPlaceholder({
+  values,
+  handleChange,
+  name,
+  label,
+  placeholder,
+  errors,
+  touched,
+}: {
+  values: any;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  name: string;
+  label: string;
+  placeholder?: string;
+  errors?: any;
+  touched?: any;
+}) {
+  return (
+    <div className="form-control">
+      <label className={`label ${values ? "block" : "invisible"}`}>
+        <span className="label-text">{label}</span>
+      </label>
+      <input
+        type="text"
+        name={name}
+        value={values}
+        onChange={handleChange}
+        className={`input input-bordered  indent-5 w-full ${
+          errors && touched ? "input-warning placeholder:text-warning" : ""
+        } `}
+        placeholder={placeholder}
+      />
+      {errors && touched && (
+        <div className="flex flex-row items-center mt-1">
+          <IoWarningOutline className="text-warning text-base mr-1" />
+          <p className="text-sm text-warning mt-1">{errors}</p>
+        </div>
+      )}
+    </div>
+  );
+}

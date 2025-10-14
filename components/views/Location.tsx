@@ -1,18 +1,22 @@
 "use client";
 
 import { FaMapLocation, FaSortUp } from "react-icons/fa6";
-import { AddLocationModal } from "./AddLocationModal";
+import { AddLocationModal } from "./Modals/AddLocationModal";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FaSortDown } from "react-icons/fa";
+import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
+import UpdateLocationModal from "./Modals/UpdateLocationModal";
 
 export default function Location() {
-  const [showAddLocation, setShowAddLocation] = useState(false);
   const [search, setSearch] = useState("");
-  const [column_name, setColumnName] = useState("id");
+  const [column_name, setColumnName] = useState("location_id");
   const [orderby, setOrderBy] = useState("ASC");
   const [page, setPage] = useState(0);
-  const { error, data, isFetching, isError } = useQuery({
+  const [location_id,setLocationId] = useState()
+
+
+  const { error, data, isFetching, isError, isSuccess } = useQuery({
     queryKey: ["List_Location", search, column_name, orderby, page],
     queryFn: async () => {
       console.log(page);
@@ -39,9 +43,11 @@ export default function Location() {
     },
   });
 
+  console.log(data);
   return (
     <div className="w-11/12 mx-auto">
       <AddLocationModal />
+  <UpdateLocationModal location_id={location_id} setLocationId={setLocationId} />;
       <div>
         <div className="breadcrumbs text-sm">
           <ul>
@@ -101,65 +107,178 @@ export default function Location() {
       </div>
       <div className="divider"></div>
       <div className="overflow-x-auto w-11/12 mx-auto">
-        <table className="table table-zebra">
+        <table className="table table-zebra text-center">
           {/* head */}
-          <thead>
+          <thead
+            className={`${isFetching ? "invisible" : "table-header-group"}`}
+          >
             <tr>
-              {column_name !== "location_id" ? (
+              {column_name == "location_id" ? (
                 <th
-                  className="flex flex-row cursor-pointer"
+                  className="cursor-pointer"
                   onClick={() => {
-                    setColumnName("tbl_location");
+                    setColumnName("location_id");
                     if (orderby == "ASC") {
                       setOrderBy("DESC");
                     } else {
                       setOrderBy("ASC");
                     }
                   }}
-                > Location Name
-                  {orderby == "ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
-                  ) : (
-                    <FaSortDown className="my-auto mx-2" />
-                  )}
+                >
+                  <div className="flex flex-row justify-center">
+                    ID
+                    {orderby == "ASC" ? (
+                      <FaSortUp className="my-auto mx-2" />
+                    ) : (
+                      <FaSortDown className="my-auto mx-2" />
+                    )}
+                  </div>
                 </th>
               ) : (
-                <th className="flex flex-row">Location Name</th>
+                <th
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setColumnName("location_id");
+                  }}
+                >
+                  ID
+                </th>
               )}
-              {column_name !== "location_name" ? (
+
+              {column_name == "location_name" ? (
                 <th
-                  className="flex flex-row cursor-pointer"
+                  className=" cursor-pointer"
                   onClick={() => {
-                    setColumnName("tbl_location");
+                    setColumnName("location_name");
                     if (orderby == "ASC") {
                       setOrderBy("DESC");
                     } else {
                       setOrderBy("ASC");
                     }
                   }}
-                > Location Name
-                  {orderby == "ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
-                  ) : (
-                    <FaSortDown className="my-auto mx-2" />
-                  )}
+                >
+                  <div className="flex flex-row justify-center">
+                    Location Name
+                    {orderby == "ASC" ? (
+                      <FaSortUp className="my-auto mx-2" />
+                    ) : (
+                      <FaSortDown className="my-auto mx-2" />
+                    )}
+                  </div>
                 </th>
               ) : (
-                <th className="flex flex-row">Location Name</th>
+                <th
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setColumnName("location_name");
+                  }}
+                >
+                  Location Name
+                </th>
               )}
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {/* row 1 */}
-            <tr>
-              <th>1</th>
-              <td>Cy Ganderton</td>
-              <td>Quality Control Specialist</td>
-            </tr>
-           
+
+            {isError || error ? (
+              <tr>
+                <td colSpan={3} className="font-xl text-center text-error">
+                  Something went wrong while we retrieve data.
+                </td>
+              </tr>
+            ) : isFetching ? (
+              <tr>
+                <td colSpan={3} className="font-xl text-center text-info">
+                  Please wait while we load your data
+                  <div className="loading loading-infinity "></div>
+                </td>
+              </tr>
+            ) : isSuccess ? (
+              data.status === 404 ? (
+                <tr>
+                  <td colSpan={3} className="font-xl text-center text-error">
+                    {data.statusText}
+                  </td>
+                </tr>
+              ) : data.status === 500 ? (
+                <td colSpan={3} className="font-xl text-center text-error">
+                  {data.statusText}
+                </td>
+              ) : (
+                data.data?.map((location_data: any, index: number) => {
+                  return (
+                    <tr key={index}>
+                      <td>{location_data.location_id}</td>
+                      <td>{location_data.location_name}</td>
+                      <td>
+                        <div className="flex flex-row gap-3 justify-center">
+                          <button
+                            onClick={() => {
+                            setLocationId(location_data.location_id);
+
+                              (
+                                document.getElementById(
+                                  "UpdateLocation"
+                                ) as HTMLDialogElement
+                              ).showModal();
+                            }}
+                            className="btn btn-outline btn-sm rounded-md btn-accent"
+                          >
+                            <RiEdit2Fill />
+                            Update
+                          </button>
+                          <button className="btn btn-outline btn-sm rounded-md btn-warning">
+                            <RiDeleteBin2Fill />
+                            Remove
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )
+            ) : (
+              <tr>
+                <td>Something went wrong</td>
+              </tr>
+            )}
           </tbody>
         </table>
+        <div className="flex flex-row w-full my-auto">
+          <div className="join mx-auto my-2">
+            <button
+              onClick={() => {
+                if (page !== 0) {
+                  setPage(page - 1);
+                }
+              }}
+              className={`join-item btn ${page == 0 ? "btn-disabled" : ""}`}
+            >
+              «
+            </button>
+            <button className="join-item btn">Page {page + 1}</button>
+            <button
+              onClick={() => {
+                if (data.data.length >= 10) {
+                  setPage(page + 1);
+                }
+              }}
+              className={`join-item btn ${
+                !isSuccess
+                  ? ""
+                  : data.status == 404
+                  ? "btn-disabled"
+                  : data.data.length !== 10
+                  ? "btn-disabled"
+                  : ""
+              }`}
+            >
+              »
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

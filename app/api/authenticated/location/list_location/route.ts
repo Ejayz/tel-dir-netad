@@ -29,13 +29,13 @@ export async function POST(req: NextRequest) {
       page = 0;
     }
 
-    
     let offset_item = page * 10;
 
-    console.log(`SELECT * FROM tbl_location WHERE location_name LIKE '${`%${search}%`}' ORDER BY '${column_name}' '${orderby}'  LIMIT ${offset_item} , 10`)
+    console.log(
+      `SELECT * FROM tbl_location WHERE location_name LIKE '${`%${search}%`}' ORDER BY '${column_name}' '${orderby}'  LIMIT ${offset_item} , 10 AND is_exist=true`
+    );
 
-   
-    console.log(offset_item)
+    console.log(offset_item);
 
     const [rows, fields] = await connection.query<Location[]>(query, [
       `%${search}%`,
@@ -43,19 +43,22 @@ export async function POST(req: NextRequest) {
       orderby,
       offset_item,
     ]);
-
-    if (rows.length == 0) {
-     return NextResponse.json({
+    if (search == "" && rows.length == 0) {
+      return NextResponse.json({
+        status: 404,
+        statusText: `No more data to display.`,
+      });
+    } else if (rows.length == 0) {
+      return NextResponse.json({
         status: 404,
         statusText: `No data found related to ${search}.Please try again.`,
       });
     } else {
-          return NextResponse.json({
+      return NextResponse.json({
         status: 200,
         statusText: "Retrieved data successfully",
         data: rows,
       });
-     
     }
   } catch (e) {
     console.log(e);
