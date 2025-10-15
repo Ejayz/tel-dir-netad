@@ -13,6 +13,11 @@ interface Location extends RowDataPacket {
 export async function POST(req: NextRequest) {
   const { location_id } = await req.json();
   const connection = await pool.getConnection();
+  
+
+  if(!location_id){
+    return NextResponse.json({},{status:401,statusText:"Undefined id"})
+  }
 
   try {
     const query =
@@ -35,6 +40,7 @@ export async function POST(req: NextRequest) {
       });
     }
   } catch (e) {
+    console.log(e)
     return NextResponse.json({
       status: 500,
       statusText: "Something went wrong. Please try again.",

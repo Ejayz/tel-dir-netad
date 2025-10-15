@@ -1,11 +1,11 @@
 "use client";
 
 import { Formik, Form } from "formik";
-import { TextInput,  } from "../../ui/InputFields";
+import { TextInput } from "../../ui/InputFields";
 import * as yup from "yup";
 import { toast } from "react-toastify";
-import {  useRef } from "react";
-export function AddLocationModal() {
+import { useRef } from "react";
+export function AddLocationModal({ FetchList }: { FetchList: any }) {
   const locationValidation = yup.object({
     location: yup.string().required(),
   });
@@ -32,11 +32,14 @@ export function AddLocationModal() {
                 location: values.location,
               });
 
-              let response = await fetch("/api/authenticated/location/add_location", {
-                method: "POST",
-                body: bodyContent,
-                headers: headersList,
-              });
+              let response = await fetch(
+                "/api/authenticated/location/add_location",
+                {
+                  method: "POST",
+                  body: bodyContent,
+                  headers: headersList,
+                }
+              );
 
               let data = await response.json();
               console.log(data);
@@ -45,6 +48,7 @@ export function AddLocationModal() {
                 toast.success(data.statusText);
                 AddLocation.current?.close();
                 action.resetForm();
+                FetchList();
               } else {
                 toast.error(data.statusText);
               }

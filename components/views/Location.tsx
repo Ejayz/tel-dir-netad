@@ -13,10 +13,9 @@ export default function Location() {
   const [column_name, setColumnName] = useState("location_id");
   const [orderby, setOrderBy] = useState("ASC");
   const [page, setPage] = useState(0);
-  const [location_id,setLocationId] = useState()
+  const [location_id, setLocationId] = useState();
 
-
-  const { error, data, isFetching, isError, isSuccess } = useQuery({
+  const { error, data, isFetching, isError, isSuccess ,refetch} = useQuery({
     queryKey: ["List_Location", search, column_name, orderby, page],
     queryFn: async () => {
       console.log(page);
@@ -46,8 +45,12 @@ export default function Location() {
   console.log(data);
   return (
     <div className="w-11/12 mx-auto">
-      <AddLocationModal />
-  <UpdateLocationModal location_id={location_id} setLocationId={setLocationId} />;
+      <AddLocationModal FetchList={refetch} />
+      <UpdateLocationModal
+        FetchList={refetch}
+        location_id={location_id}
+        setLocationId={setLocationId}
+      />
       <div>
         <div className="breadcrumbs text-sm">
           <ul>
@@ -113,37 +116,7 @@ export default function Location() {
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
             <tr>
-              {column_name == "location_id" ? (
-                <th
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setColumnName("location_id");
-                    if (orderby == "ASC") {
-                      setOrderBy("DESC");
-                    } else {
-                      setOrderBy("ASC");
-                    }
-                  }}
-                >
-                  <div className="flex flex-row justify-center">
-                    ID
-                    {orderby == "ASC" ? (
-                      <FaSortUp className="my-auto mx-2" />
-                    ) : (
-                      <FaSortDown className="my-auto mx-2" />
-                    )}
-                  </div>
-                </th>
-              ) : (
-                <th
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setColumnName("location_id");
-                  }}
-                >
-                  ID
-                </th>
-              )}
+             <th>ID</th>
 
               {column_name == "location_name" ? (
                 <th
@@ -210,13 +183,13 @@ export default function Location() {
                 data.data?.map((location_data: any, index: number) => {
                   return (
                     <tr key={index}>
-                      <td>{location_data.location_id}</td>
+                      <td>{index+1}</td>
                       <td>{location_data.location_name}</td>
                       <td>
                         <div className="flex flex-row gap-3 justify-center">
                           <button
                             onClick={() => {
-                            setLocationId(location_data.location_id);
+                              setLocationId(location_data.location_id);
 
                               (
                                 document.getElementById(
@@ -229,7 +202,7 @@ export default function Location() {
                             <RiEdit2Fill />
                             Update
                           </button>
-                          <button className="btn btn-outline btn-sm rounded-md btn-warning">
+                          <button className="btn btn-outline btn-sm rounded-md btn-error">
                             <RiDeleteBin2Fill />
                             Remove
                           </button>

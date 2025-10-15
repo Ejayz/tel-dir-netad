@@ -20,8 +20,8 @@ interface User extends RowDataPacket{
   
 export async function POST(req: NextRequest) {
   const { username, password } = await req.json();
-
-
+  console.log(await bcrypt.hashSync(password,bcrypt.genSaltSync()))
+  console.log(username,password)
 
   if (username == "" || password == "") {
     return NextResponse.json(

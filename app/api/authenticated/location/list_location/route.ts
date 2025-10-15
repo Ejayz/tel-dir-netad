@@ -20,10 +20,10 @@ export async function POST(req: NextRequest) {
 
     if (search || column_name) {
       query =
-        "SELECT * FROM tbl_location WHERE location_name LIKE ? ORDER BY ? ? LIMIT ? , 10";
+        `SELECT * FROM tbl_location WHERE location_name LIKE ? AND is_exist=true ORDER BY ${column_name} ${orderby} LIMIT ? , 10`;
     } else {
       query =
-        "SELECT * FROM tbl_location WHERE location_name LIKE ? ORDER BY ? ? LIMIT ? , 10";
+        `SELECT * FROM tbl_location WHERE location_name LIKE ? AND is_exist=true ORDER BY  ${column_name} ${orderby}  LIMIT ? , 10`;
       orderby = "ASC";
       (search = ""), (column_name = "location_id");
       page = 0;
@@ -32,15 +32,13 @@ export async function POST(req: NextRequest) {
     let offset_item = page * 10;
 
     console.log(
-      `SELECT * FROM tbl_location WHERE location_name LIKE '${`%${search}%`}' ORDER BY '${column_name}' '${orderby}'  LIMIT ${offset_item} , 10 AND is_exist=true`
+      `SELECT * FROM tbl_location WHERE location_name LIKE '${`%${search}%`}' ORDER BY ${column_name} ${orderby}  LIMIT ${offset_item} , 10 `
     );
 
     console.log(offset_item);
 
     const [rows, fields] = await connection.query<Location[]>(query, [
       `%${search}%`,
-      column_name,
-      orderby,
       offset_item,
     ]);
     if (search == "" && rows.length == 0) {
