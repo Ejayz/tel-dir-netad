@@ -1,9 +1,12 @@
 "use client";
 
+import ThemeToggle from "./ThemeToggle";
+import { pool } from "@/libs/db";
+
 export default function DirectorySearch() {
   return (
     <>
-      <div className="w-full flex flex-row justify-items-center p-4">
+      <div className="w-full flex flex-row p-4">
         <label className="input flex-1">
           <svg
             className="h-[1em] opacity-50"
@@ -25,7 +28,7 @@ export default function DirectorySearch() {
           <kbd className="kbd kbd-sm">⌘</kbd>
           <kbd className="kbd kbd-sm">K</kbd>
         </label>
-
+        <ThemeToggle/>
         <a href="/login" className="btn btn-outline mx-4">Login</a>
       </div>
       <div className="divider"></div>
