@@ -43,7 +43,8 @@ export default function ThemeToggle() {
   };
 
   return (
-    <label className="swap swap-rotate">
+
+    <label className="swap swap-rotate rounded-md p-1 hover:bg-gray-600">
       <input
         type="checkbox"
         role="switch"
