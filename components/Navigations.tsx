@@ -3,7 +3,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FaRegUserCircle } from "react-icons/fa";
 import { Bounce, ToastContainer } from "react-toastify";
-import ThemeToggle from "./ThemeToggle";
 
 export function Navigations({
   children,
@@ -43,7 +42,6 @@ export function Navigations({
             Telephone Directory Management
           </div>
           <div className="hidden flex-none lg:block">
-            <ThemeToggle/>
             <ul className="menu menu-horizontal">
               {/* Navbar menu content here */}
               <li>

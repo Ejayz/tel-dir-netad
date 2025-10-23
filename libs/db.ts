@@ -11,10 +11,4 @@ export const pool=await mysql.createPool({
   password:process.env.PASS
  })
 
-try {
-  const connection = await pool.getConnection();
-  console.log('Got connection from pool!');
-  connection.release();
-} catch (err) {
-  console.error('Error connecting to the database:', err);
-}
+
