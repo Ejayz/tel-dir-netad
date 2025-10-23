@@ -55,7 +55,7 @@ export function Navigations({
                       <a href="/local">Local</a>
                     </li>
                     <li>
-                      <a>Group</a>
+                      <a href="/group">Group</a>
                     </li>
                     <li>
                       <a>Department</a>

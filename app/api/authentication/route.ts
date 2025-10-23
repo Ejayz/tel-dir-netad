@@ -19,6 +19,7 @@ interface User extends RowDataPacket{
 
   
 export async function POST(req: NextRequest) {
+  console.log(req)
   const { username, password } = await req.json();
 
   console.log()

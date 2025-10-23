@@ -29,7 +29,8 @@ transition={Bounce}
           target="_blank"
           rel="noopener noreferrer"
         >
-          Having a problem ? Contact us 3907 Net Ad Team
+          Having a problem ? Contact us 1000 Net Ad team
+
         </a>
       </footer>
     </div>

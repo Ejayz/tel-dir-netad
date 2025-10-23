@@ -1,14 +1,14 @@
 "use client";
 
 import { FaMapLocation, FaSortUp } from "react-icons/fa6";
-import { AddLocationModal } from "./Modals/Location/AddLocationModal";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FaSortDown } from "react-icons/fa";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
 import UpdateLocationModal from "./Modals/Location/UpdateLocationModal";
+import { AddGroupModal } from "./Modals/Group/AddGroupModal";
 
-export default function Location() {
+export default function Group() {
   const [search, setSearch] = useState("");
   const [column_name, setColumnName] = useState("location_id");
   const [orderby, setOrderBy] = useState("ASC");
@@ -16,7 +16,7 @@ export default function Location() {
   const [location_id, setLocationId] = useState();
 
   const { error, data, isFetching, isError, isSuccess ,refetch} = useQuery({
-    queryKey: ["List_Location", search, column_name, orderby, page],
+    queryKey: ["List_Group", search, column_name, orderby, page],
     queryFn: async () => {
       console.log(page);
       let headersList = {
@@ -42,13 +42,10 @@ export default function Location() {
     },
   });
 
-
-
-
-
+  console.log(data);
   return (
     <div className="w-11/12 mx-auto">
-      <AddLocationModal FetchList={refetch} />
+      <AddGroupModal FetchList={refetch} />
       <UpdateLocationModal
         FetchList={refetch}
         location_id={location_id}
@@ -101,13 +98,13 @@ export default function Location() {
           <button
             onClick={() => {
               (
-                document.getElementById("AddLocation") as HTMLDialogElement
+                document.getElementById("AddGroup") as HTMLDialogElement
               ).showModal();
             }}
             className="btn items rounded-md btn-outline btn-primary"
           >
             <FaMapLocation />
-            New Location
+            New Group
           </button>
         </div>
       </div>
@@ -134,7 +131,7 @@ export default function Location() {
                   }}
                 >
                   <div className="flex flex-row justify-center">
-                    Location Name
+                    Group Name
                     {orderby == "ASC" ? (
                       <FaSortUp className="my-auto mx-2" />
                     ) : (
@@ -149,7 +146,7 @@ export default function Location() {
                     setColumnName("location_name");
                   }}
                 >
-                  Location Name
+                  Group Name
                 </th>
               )}
               <th>Action</th>
@@ -206,7 +203,6 @@ export default function Location() {
                             Update
                           </button>
                           <button onClick={()=>{
-                              
                           }} className="btn btn-outline btn-sm rounded-md btn-error">
                             <RiDeleteBin2Fill />
                             Remove
