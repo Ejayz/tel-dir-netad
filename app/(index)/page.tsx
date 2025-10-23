@@ -2,7 +2,7 @@ import DirectorySearch from "@/components/Directory";
 
 export default function Home() {
   return (
-    <div className="font-mono flex flex-col items-center justify-items-center min-h-screen">
+    <div data-theme="light" className="font-san flex flex-col items-center justify-items-center min-h-screen">
       <main className="flex flex-col  items-center min-h-screen min-w-3/4 sm:items-start">
       <DirectorySearch>
 

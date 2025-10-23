@@ -1,6 +1,6 @@
 "use client";
 import { Formik, Form } from "formik";
-import { TextInput } from "../../ui/InputFields";
+import { TextInput } from "../../../ui/InputFields";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import { Dispatch, useRef } from "react";
