@@ -4,6 +4,7 @@ import * as yup from "yup";
 import { PasswordInput, TextInput } from "./ui/InputFields";
 import { useRouter } from "next/navigation";
 import { Bounce, toast, ToastContainer } from "react-toastify";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Login() {
   const loginValidation = yup.object({
@@ -18,6 +19,7 @@ const navigate = useRouter()
       <div data-theme="light" className="hero font-mono bg-base-200 min-h-screen">
         <div className="hero-content flex-col lg:flex-row-reverse">
           <div className="text-center lg:text-left">
+            <ThemeToggle/>
             <h1 className="text-5xl font-bold">Login now!</h1>
             <p className="py-6">
               Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
