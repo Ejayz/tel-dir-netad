@@ -1,24 +1,22 @@
 "use client";
 import ThemeToggle from "./ThemeToggle";
 
-import ThemeToggle from "./ThemeToggle";
-import pool from "@/libs/db";
 
 export default function DirectorySearch() {
   return (
     <>
-      <div className="w-full flex flex-row p-2 justify-end mt-5">
-        <div className="mx-2 flex-1 uppercase font-mono font-bold">
+      <div className="flex flex-row justify-end w-full p-2 mt-5">
+        <div className="flex-1 mx-2 font-mono font-bold uppercase">
             Telephone Directory Management
           </div>
         <div className="flex ">
           <ThemeToggle/>
-          <a href="/login" className="btn btn-outline mx-4">Login</a>
+          <a href="/login" className="mx-4 btn btn-outline">Login</a>
         </div>
         
       </div>
       <div>
-        <label className="input flex-auto ">
+        <label className="flex-auto input ">
           <svg
             className="h-[1em] opacity-50"
             xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +39,7 @@ export default function DirectorySearch() {
         </label>
       </div>
       <div className="divider"></div>
-      <div className="overflow-x-auto w-full">
+      <div className="w-full overflow-x-auto">
         <table className="table table-zebra">
           {/* head */}
           <thead>
