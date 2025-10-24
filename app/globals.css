@@ -15,6 +15,20 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Allow an explicit theme to be set on the <html> element via data-theme.
+   DaisyUI reads `data-theme` on <html> (or :root). We provide two simple
+   mappings for 'light' and 'dark' that override the CSS variables above. */
+html[data-theme="light"] {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+html[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+/* When no explicit theme is set, respect the user's OS preference. */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
