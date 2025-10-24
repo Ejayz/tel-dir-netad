@@ -1,12 +1,16 @@
 import DirectorySearch from "@/components/Directory";
+import { pool } from "@/libs/db";
+
 
 export default function Home() {
   return (
-    <div data-theme="light" className="font-san flex flex-col items-center justify-items-center min-h-screen">
+    <div className="font-mono flex flex-col items-center justify-items-center min-h-screen">
       <main className="flex flex-col  items-center min-h-screen min-w-3/4 sm:items-start">
       <DirectorySearch>
 
       </DirectorySearch>
+      <div>
+      </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
@@ -20,3 +24,4 @@ export default function Home() {
     </div>
   );
 }
+
