@@ -2,7 +2,7 @@ import Login from "@/components/Login";
 
 export default function Home() {
   return (
-    <div className="font-mono flex flex-col items-center justify-items-center min-h-screen">
+    <div data-theme="light" className="font-mono flex flex-col items-center justify-items-center min-h-screen">
       <main className="flex flex-col  items-center min-h-screen min-w-full sm:items-start">
       <Login></Login>
       </main>

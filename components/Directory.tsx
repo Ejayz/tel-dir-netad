@@ -1,6 +1,9 @@
 "use client";
 import ThemeToggle from "./ThemeToggle";
 
+import ThemeToggle from "./ThemeToggle";
+import pool from "@/libs/db";
+
 export default function DirectorySearch() {
   return (
     <>
