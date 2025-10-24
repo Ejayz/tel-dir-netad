@@ -1,7 +1,6 @@
 "use client";
 import ThemeToggle from "./ThemeToggle";
 
-
 export default function DirectorySearch() {
   return (
     <>
