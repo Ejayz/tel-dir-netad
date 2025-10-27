@@ -6,25 +6,25 @@ import * as dotenv from "dotenv";
 import { QueryResult, ResultSetHeader, RowDataPacket } from "mysql2";
 dotenv.config();
 
-interface User extends RowDataPacket{
-  uuid:number,
-  username:string,
-  password:string,
-  email:string,
-  first_name:string,
-  middle_name:String,
-  last_name:string,
-  created_at:string
+interface User extends RowDataPacket {
+  uuid: number,
+  username: string,
+  password: string,
+  email: string,
+  first_name: string,
+  middle_name: String,
+  last_name: string,
+  created_at: string
 }
 
-  
+
 export async function POST(req: NextRequest) {
   console.log(req)
   const { username, password } = await req.json();
 
   console.log()
-  console.log(await bcrypt.hashSync(password,bcrypt.genSaltSync()))
-  console.log(username,password)
+  console.log(await bcrypt.hashSync(password, bcrypt.genSaltSync()))
+  console.log(username, password)
 
   if (username == "" || password == "") {
     return NextResponse.json(
@@ -40,12 +40,26 @@ export async function POST(req: NextRequest) {
   }
 
   const prep = "SELECT * FROM tbl_user WHERE username=?  and is_exist=true"
-  const [rows,fields] = await pool.execute<User[]>(prep,[username])
+  const [rows, fields] = await pool.execute<User[]>(prep, [username])
+  console.log("wawa");
+  console.log(fields);
+  console.log("wawa");
 
-  const validateAccount = bcrypt.compareSync(
-    password,
-    rows[0].password
-  );
+  let validateAccount = false;
+
+  try {
+    validateAccount = bcrypt.compareSync(
+      password,
+      rows[0].password
+    );
+
+  }
+  catch{
+    console.log("Authentication Failed!")
+  }
+  
+
+
 
   if (validateAccount) {
     const authenticationKey = await JWTGenerator(
@@ -62,7 +76,7 @@ export async function POST(req: NextRequest) {
       { expiresIn: "24h" }
     );
 
-    const response=  NextResponse.json({
+    const response = NextResponse.json({
       status: 200,
       statusText: `Welcome ${username}.`,
     })
