@@ -41,9 +41,6 @@ export async function POST(req: NextRequest) {
 
   const prep = "SELECT * FROM tbl_user WHERE username=?  and is_exist=true"
   const [rows, fields] = await pool.execute<User[]>(prep, [username])
-  console.log("wawa");
-  console.log(fields);
-  console.log("wawa");
 
   let validateAccount = false;
 
@@ -56,6 +53,7 @@ export async function POST(req: NextRequest) {
   }
   catch{
     console.log("Authentication Failed!")
+    console.log(fields);
   }
   
 
