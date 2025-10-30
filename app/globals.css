@@ -1,21 +1,23 @@
 @import "tailwindcss";
+
+
 @plugin "daisyui" {
-  themes: light , dark --prefersdark;
+  themes: light --default, dark --prefersdark;
 }
 
 @plugin "daisyui/theme" {
   name: "light";
-  --background: #ffffff;
-  --foreground: #171717;
-  --btn-color:  #1f429b;
-  --color-secondary: #1f429b;
+  --background: #ffffff ;
+  --foreground: #171717 ;
+  --btn-color: #1f429b ;
+  --color-secondary: #1f429b ;
 }
 
 @plugin "daisyui/theme" {
   name: "dark";
   --background: #0a0a0a;
   --foreground: #ededed;
-  --btn-color:  #1f429b;
+  --btn-color: #1f429b;
   --color-secondary: #03a6df;
 }
 
