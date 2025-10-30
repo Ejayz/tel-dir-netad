@@ -16,7 +16,7 @@ const navigate = useRouter()
 
   return (
     <>
-      <div className="hero font-mono bg-base-200 min-h-screen">
+      <div data-theme="light" className="hero font-mono bg-base-200 min-h-screen">
         <div className="hero-content flex-col lg:flex-row-reverse">
           <div className="text-center lg:text-left">
             <ThemeToggle/>

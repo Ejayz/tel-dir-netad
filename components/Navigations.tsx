@@ -15,9 +15,9 @@ export function Navigations({
   return (
     <div className="drawer">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col">
+      <div className="flex flex-col drawer-content">
         {/* Navbar */}
-        <div className="navbar bg-base-300 w-full">
+        <div className="w-full navbar bg-base-300">
           <div className="flex-none lg:hidden">
             <label
               htmlFor="my-drawer-3"
@@ -28,7 +28,7 @@ export function Navigations({
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                className="inline-block h-6 w-6 stroke-current"
+                className="inline-block w-6 h-6 stroke-current"
               >
                 <path
                   strokeLinecap="round"
@@ -39,11 +39,11 @@ export function Navigations({
               </svg>
             </label>
           </div>
-          <div className="mx-2 flex-1 px-2 uppercase font-mono font-bold">
+          <div className="flex-1 px-2 mx-2 font-mono font-bold uppercase">
             Telephone Directory Management
           </div>
-          <div className="hidden flex-none lg:block">
-            <ThemeToggle/>
+          <div className="flex-none hidden lg:block">
+            <ThemeToggle />
             <ul className="menu menu-horizontal">
               {/* Navbar menu content here */}
               <li>
@@ -52,7 +52,7 @@ export function Navigations({
               <li>
                 <details>
                   <summary>Management</summary>
-                  <ul className="bg-base-100 rounded-t-none p-2">
+                  <ul className="p-2 rounded-t-none bg-base-100">
                     <li>
                       <a href="/local">Local</a>
                     </li>
@@ -64,6 +64,9 @@ export function Navigations({
                     </li>
                     <li>
                       <a href="/location">Location</a>
+                    </li>
+                    <li>
+                      <a href="/location">Branch</a>
                     </li>
                   </ul>
                 </details>
@@ -81,13 +84,13 @@ export function Navigations({
                   className="btn btn-ghost btn-circle avatar"
                 >
                   <div className="w-10 rounded-full">
-                    <FaRegUserCircle className="text-3xl mx-auto my-auto" />
+                    <FaRegUserCircle className="mx-auto my-auto text-3xl" />
                   </div>
                 </div>
 
                 <ul
                   tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+                  className="p-2 mt-3 shadow menu menu-sm dropdown-content bg-base-100 rounded-box z-1 w-52"
                 >
                   <li>
                     <a className="justify-between">
@@ -130,7 +133,7 @@ export function Navigations({
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        <ul className="menu bg-base-200 min-h-full w-80 p-4">
+        <ul className="min-h-full p-4 menu bg-base-200 w-80">
           {/* Sidebar content here */}
           <li>
             <a>Sidebar Item 1</a>
