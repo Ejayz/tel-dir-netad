@@ -68,6 +68,7 @@ export async function middleware(request: NextRequest) {
           token,
           new TextEncoder().encode(jwtSecret)
         );
+        console.log(verify)
         if (!verify.payload) {
           return NextResponse.redirect(new URL("/", request.url));
         }

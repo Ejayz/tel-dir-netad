@@ -50,9 +50,9 @@ export function Navigations({
                 <a>Dashboard</a>
               </li>
               <li>
-                <details>
+                <details className="z-">
                   <summary>Management</summary>
-                  <ul className="p-2 rounded-t-none bg-base-100">
+                  <ul className="z-10 p-2 rounded-t-none bg-base-100">
                     <li>
                       <a href="/local">Local</a>
                     </li>
@@ -66,7 +66,7 @@ export function Navigations({
                       <a href="/location">Location</a>
                     </li>
                     <li>
-                      <a href="/location">Branch</a>
+                      <a href="/branch">Branch</a>
                     </li>
                   </ul>
                 </details>
@@ -122,6 +122,7 @@ export function Navigations({
           pauseOnHover
           theme="dark"
           transition={Bounce}
+          className={"z-50"}
         />
         <QueryClientProvider client={queryClient}>
           {children}
