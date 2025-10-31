@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { getcookieValue } from "@/libs/Tools";
 
 const THEME_KEY = "theme";
 
@@ -14,22 +15,7 @@ export default function ThemeToggle() {
   useEffect(() => {
 
     const cookies = document.cookie; //get Cookies
-    const columns = cookies.split(";"); // split strings to array based on ;
-    for (let i = 0; i < columns.length; i++) { //check all array
-      const val = columns[i];
-      if (val.includes(THEME_KEY)) { //check each array if it contains the word 'theme'
-        if(val.includes("dark")){ //if so, check the array for the word dark
-          theme = "dark"  //if so, set theme to dark
-          setIsChecked(true); // set checked to true 
-          document.documentElement.setAttribute("data-theme", theme);
-        }
-        else{
-          theme = "light" //if not, default to light
-          setIsChecked(false);
-        }
-        
-      }// no need to else light mode as light is the initial state.
-    }
+    setIsChecked(getcookieValue(cookies,'theme') === 'dark')
   },)
 
   const toggle = () => {

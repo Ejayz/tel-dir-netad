@@ -24,10 +24,25 @@ export const JWTGenerator = async (
   return createToken;
 };
 
-export const ReturnToken = async() => {
+export const ReturnToken = async () => {
   const cookies = document ? document.cookie.split("token=")[1] : "";
-  console.log(cookies )
+  console.log(cookies)
   const decoded = await jsonwebtoken.decode(cookies);
   console.log(decoded)
   return decoded
+};
+
+export const getcookieValue = (
+  cookies: string,
+  name: string
+) => {
+  let token = '';
+  const carray = cookies.split(';');
+  for (let i = 0; i < carray.length; i++) {
+    const row = carray[i];
+    if (row.includes(name)) {
+      token = row.slice(row.indexOf('=') + 1, row.length);
+    }
+  }
+  return token;
 };
