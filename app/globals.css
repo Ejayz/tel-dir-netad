@@ -1,40 +1,36 @@
 @import "tailwindcss";
+
+
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark, cupcake;
+  themes: light --default, dark --prefersdark;
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin "daisyui/theme" {
+  name: "light";
+  --background: #ffffff ;
+  --foreground: #171717 ;
+  --btn-color: #1f429b ;
+  --color-secondary: #1f429b ;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --btn-color: #1f429b;
+  --color-secondary: #03a6df;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-/* Allow an explicit theme to be set on the <html> element via data-theme.
-   DaisyUI reads `data-theme` on <html> (or :root). We provide two simple
-   mappings for 'light' and 'dark' that override the CSS variables above. */
-html[data-theme="light"] {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* 
+KCC Dark blue 1f429b rgb(31,66,155)
+KCC Light Blue 03a6df rgb (3,167,223)
+*/
 
-html[data-theme="dark"] {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
-/* When no explicit theme is set, respect the user's OS preference. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);

@@ -87,7 +87,7 @@ const navigate = useRouter()
                     <div>
                       <a className="link link-hover">Forgot password?</a>
                     </div>
-                    <button type="submit" className={`btn ${!isSubmitting?"btn-neutral":"btn-disabled"} mt-4`}>
+                    <button type="submit" className={`btn ${!isSubmitting?"btn-secondary":"btn-disabled"} mt-4`}>
                       {
                         !isSubmitting?<>Log In</>:<div className="loading-infinity loading loading-xl"></div>
                       }
