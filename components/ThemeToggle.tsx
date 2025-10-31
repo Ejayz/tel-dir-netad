@@ -15,7 +15,9 @@ export default function ThemeToggle() {
   useEffect(() => {
 
     const cookies = document.cookie; //get Cookies
-    setIsChecked(getcookieValue(cookies,'theme') === 'dark')
+    setTheme(getcookieValue(cookies,'theme'));
+    setIsChecked( theme === 'dark');
+    
   },)
 
   const toggle = () => {

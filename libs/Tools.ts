@@ -37,12 +37,27 @@ export const getcookieValue = (
   name: string
 ) => {
   let token = '';
-  const carray = cookies.split(';');
-  for (let i = 0; i < carray.length; i++) {
-    const row = carray[i];
+  const cArray = cookies.split(';');
+  for (let i = 0; i < cArray.length; i++) {
+    const row = cArray[i];
     if (row.includes(name)) {
-      token = row.slice(row.indexOf('=') + 1, row.length);
+      token = row.slice(row.indexOf('=') + 1, row.length).trim();
     }
   }
   return token;
+};
+
+export const getpayloadValue = async(
+  payload: string,
+  name: string
+) => {
+  let value = '';
+  const cArray = payload.split(',');
+  for(let i=0; i<cArray.length; i++){
+    const row = cArray[i];
+    if (row.includes(name)){
+      value = row.slice(row.indexOf(':')+1, row.length).trim();
+    }
+  }
+
 };
