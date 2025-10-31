@@ -39,11 +39,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const prep =
-    "SELECT * FROM tbl_user LEF WHERE username=?  and is_exist=true ";
-  const [rows, fields] = await pool.execute<User[]>(prep, [username]);
+  const prep = "SELECT * FROM tbl_user WHERE username=?  and is_exist=true"
+  const [rows, fields] = await pool.execute<User[]>(prep, [username])
 
-  const validateAccount = bcrypt.compareSync(password, rows[0].password);
+  let validateAccount = false;
+
+  try {
+    validateAccount = bcrypt.compareSync(
+      password,
+      rows[0].password
+    );
+
+  }
+  catch{
+    console.log("Authentication Failed!")
+    console.log(fields);
+  }
+  
+
+
 
   if (validateAccount) {
     const authenticationKey = await JWTGenerator(

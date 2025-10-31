@@ -1,55 +1,54 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 const THEME_KEY = "theme";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    // default while hydration hasn't run
-    return "light";
-  });
+
+  let [theme, setTheme] = useState('light')
+  const [isChecked, setIsChecked] = useState(false);
+  // let [ctheme,setCtheme] = useState('light')
 
   useEffect(() => {
-    try {
-      // 1. prefer saved value
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === "light" || saved === "dark") {
-        setTheme(saved);
-        document.documentElement.setAttribute("data-theme", saved);
-        return;
-      }
 
-      // 2. fallback to system preference
-      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initial = prefersDark ? "dark" : "light";
-      setTheme(initial);
-      document.documentElement.setAttribute("data-theme", initial);
-    } catch (e) {
-      // localStorage may be unavailable in some environments; silently ignore
-      console.error(e);
+    const cookies = document.cookie; //get Cookies
+    const columns = cookies.split(";"); // split strings to array based on ;
+    for (let i = 0; i < columns.length; i++) { //check all array
+      const val = columns[i];
+      if (val.includes(THEME_KEY)) { //check each array if it contains the word 'theme'
+        if(val.includes("dark")){ //if so, check the array for the word dark
+          theme = "dark"  //if so, set theme to dark
+          setIsChecked(true); // set checked to true 
+          document.documentElement.setAttribute("data-theme", theme);
+        }
+        else{
+          theme = "light" //if not, default to light
+          setIsChecked(false);
+        }
+        
+      }// no need to else light mode as light is the initial state.
     }
-  }, []);
+  },)
 
   const toggle = () => {
-    const next = theme === "dark" ? "light" : "dark";
+    const next = theme === "dark" ? "light" : "dark"; 
+    Cookies.set(THEME_KEY, next);
     setTheme(next);
-    try {
-      localStorage.setItem(THEME_KEY, next);
-    } catch (e) {
-      // ignore
-    }
+    setIsChecked(!isChecked);
     document.documentElement.setAttribute("data-theme", next);
   };
 
-  return (
 
-    <label className="swap swap-rotate rounded-md p-1 hover:bg-gray-600">
+  return (
+    //swap swap-rotate
+    <label className=" swap swap-rotate rounded-md p-1 hover:bg-gray-600">
       <input
         type="checkbox"
         role="switch"
         aria-label="Toggle theme"
-        checked={theme === "dark"}
+        checked={isChecked}
         onChange={toggle}
         className="hidden"
       />
