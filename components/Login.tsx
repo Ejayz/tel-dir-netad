@@ -16,7 +16,7 @@ const navigate = useRouter()
 
   return (
     <>
-      <div data-theme="light" className="hero font-mono bg-base-200 min-h-screen">
+      <div className="hero font-mono bg-base-200 min-h-screen">
         <div className="hero-content flex-col lg:flex-row-reverse">
           <div className="text-center lg:text-left">
             <ThemeToggle/>
@@ -109,7 +109,6 @@ const navigate = useRouter()
       pauseOnFocusLoss
       draggable
       pauseOnHover
-      theme="light"
       transition={Bounce} />
     </>
   );

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
-
+import get_theme from "@/components/Theme_Apply";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -12,7 +12,7 @@ import "../globals.css";
 //   subsets: ["latin"],
 // });
 
-import get_theme from "@/components/Theme_Apply";
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
