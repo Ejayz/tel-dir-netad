@@ -17,9 +17,11 @@ export function AddLocalModal() {
               location: "",
               group: "",
               department: "",
+              branch: "",
               new_location: "",
               new_group: "",
               new_department: "",
+              new_branch: "",
             }}
             onSubmit={async (values) => {}}
           >
@@ -42,7 +44,8 @@ export function AddLocalModal() {
                     placeholder="Local"
                     touched={touched.local}
                   ></TextInput>
-                  <SelectInput
+                  <div > 
+                    <div className="w-50"><SelectInput
                     handleChange={handleChange}
                     label="Group"
                     name="group"
@@ -50,9 +53,10 @@ export function AddLocalModal() {
                     errors={errors.group}
                     placeholder="Group"
                     touched={touched.group}
-                    options={[{ id: 1, placeholder: "fdsfds" }]}
-                  ></SelectInput>
-                  <SelectInput
+                    options={[{ id: 1, placeholder: "fdsfds" },{id: 2, placeholder: "test"}]}
+                  ></SelectInput></div>
+
+                    <div className="w-50"><SelectInput
                     handleChange={handleChange}
                     label="Location"
                     name="location"
@@ -61,7 +65,9 @@ export function AddLocalModal() {
                     placeholder="Location"
                     touched={touched.location}
                     options={[{ id: 1, placeholder: "fdsfds" }]}
-                  ></SelectInput>
+                  ></SelectInput></div>
+                  </div>
+                  
                   <SelectInput
                     handleChange={handleChange}
                     label="Department"
@@ -82,7 +88,7 @@ export function AddLocalModal() {
                     } mt-4`}
                   >
                     {!isSubmitting ? (
-                      <>Log In</>
+                      <>Submit</>
                     ) : (
                       <div className="loading-infinity loading loading-xl"></div>
                     )}

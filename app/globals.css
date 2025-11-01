@@ -15,7 +15,7 @@
 
 @plugin "daisyui/theme" {
   name: "dark";
-  --background: #0a0a0a;
+  --background: #050510;
   --foreground: #ededed;
   --btn-color: #1f429b;
   --color-secondary: #03a6df;

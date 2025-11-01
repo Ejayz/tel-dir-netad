@@ -5,6 +5,7 @@ export default function Home() {
   return (
     <>
       <main className="flex flex-col  items-center min-h-screen min-w-full sm:items-start">
+        
         <Navigations>
           <Local />
         </Navigations>

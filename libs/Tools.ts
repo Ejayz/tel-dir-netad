@@ -47,17 +47,21 @@ export const getcookieValue = (
   return token;
 };
 
-export const getpayloadValue = async(
+export const getpayloadValue = (
   payload: string,
   name: string
 ) => {
   let value = '';
+  
   const cArray = payload.split(',');
+  // console.log("tools: ",cArray);
   for(let i=0; i<cArray.length; i++){
     const row = cArray[i];
+    // console.log(row,'--->',typeof row);
     if (row.includes(name)){
       value = row.slice(row.indexOf(':')+1, row.length).trim();
+      // console.log('tools:', value);
     }
   }
-
+  return value;
 };
