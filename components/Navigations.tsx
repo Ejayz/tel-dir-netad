@@ -12,6 +12,9 @@ export function Navigations({
 }>) {
   const queryClient = new QueryClient();
 
+
+
+  
   return (
     <div className="drawer">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
