@@ -16,7 +16,7 @@ const navigate = useRouter()
 
   return (
     <>
-      <div data-theme="light" className="hero font-mono bg-base-200 min-h-screen">
+      <div className="hero font-mono bg-base-200 min-h-screen">
         <div className="hero-content flex-col lg:flex-row-reverse">
           <div className="text-center lg:text-left">
             <ThemeToggle/>
@@ -87,7 +87,7 @@ const navigate = useRouter()
                     <div>
                       <a className="link link-hover">Forgot password?</a>
                     </div>
-                    <button type="submit" className={`btn ${!isSubmitting?"btn-neutral":"btn-disabled"} mt-4`}>
+                    <button type="submit" className={`btn ${!isSubmitting?"btn-secondary":"btn-disabled"} mt-4`}>
                       {
                         !isSubmitting?<>Log In</>:<div className="loading-infinity loading loading-xl"></div>
                       }
@@ -109,7 +109,6 @@ const navigate = useRouter()
       pauseOnFocusLoss
       draggable
       pauseOnHover
-      theme="light"
       transition={Bounce} />
     </>
   );

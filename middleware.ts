@@ -24,13 +24,24 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
   }
-    if (request.nextUrl.pathname == "/api/authentication") {
-      return NextResponse.next()
-    }
+  // API ALLOW for AUTHENTICATION 
+  if (request.nextUrl.pathname == "/api/authentication") {
+    return NextResponse.next()
+  }
+  // API ALLOW for AUTHENTICATION 
+  if (request.nextUrl.pathname == "/api/theme_toggle") {
+    return NextResponse.next()
+  }
+  //Theme cookies checking for new connections
+  
+  //allow access to api for non logged in users
+  if (request.nextUrl.pathname == "/api/list_directory") {
+    return NextResponse.next()
+  }
   if (request.nextUrl.pathname == "/api/disconnect") {
-    const IP =request.headers.get("x-forwarded-for")?.split("::ffff:")[1] || "";
-      console.log(IP)
-      console.log(routerIP)
+    const IP = request.headers.get("x-forwarded-for")?.split("::ffff:")[1] || "";
+    console.log(IP)
+    console.log(routerIP)
     if (IP != routerIP) {
       return NextResponse.json(
         { message: "Unauthorized Access", code: 403 },
@@ -57,6 +68,7 @@ export async function middleware(request: NextRequest) {
           token,
           new TextEncoder().encode(jwtSecret)
         );
+        console.log(verify)
         if (!verify.payload) {
           return NextResponse.redirect(new URL("/", request.url));
         }
