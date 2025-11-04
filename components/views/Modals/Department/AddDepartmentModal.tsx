@@ -5,21 +5,22 @@ import { TextInput } from "../../../ui/InputFields";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import { useRef } from "react";
-export function AddLocationModal({ FetchList }: { FetchList: any }) {
-  const locationValidation = yup.object({
-    location: yup.string().required(),
+
+export function AddDepartmentModal({ FetchList }: { FetchList: any }) {
+  const departmentValidation = yup.object({
+    department: yup.string().required(),
   });
 
-  const AddLocation = useRef<HTMLDialogElement>(null);
+  const AddDepartment = useRef<HTMLDialogElement>(null);
 
   return (
     <>
-      <dialog id="AddLocation" ref={AddLocation} className="modal">
+      <dialog id="AddDepartment" ref={AddDepartment} className="modal">
         <div className="modal-box">
-          <h3 className="text-lg font-bold">Add Location</h3>
+          <h3 className="text-lg font-bold">Add Department</h3>
           <Formik
             initialValues={{
-              location: "",
+              department: "",
             }}
             onSubmit={async (values, action) => {
               let headersList = {
@@ -29,11 +30,11 @@ export function AddLocationModal({ FetchList }: { FetchList: any }) {
               };
 
               let bodyContent = JSON.stringify({
-                location: values.location,
+                department_name: values.department,
               });
 
               let response = await fetch(
-                "/api/authenticated/location/add_location",
+                "/api/authenticated/department/add_department",
                 {
                   method: "POST",
                   body: bodyContent,
@@ -44,16 +45,16 @@ export function AddLocationModal({ FetchList }: { FetchList: any }) {
               let data = await response.json();
               console.log(data);
               if (data.status == 200) {
-                console.log("Triggerted");
+                console.log("Triggerted"); //dafuq? naa man gud triggered na word.
                 toast.success(data.statusText);
-                AddLocation.current?.close();
+                AddDepartment.current?.close();
                 action.resetForm();
                 FetchList();
               } else {
                 toast.error(data.statusText);
               }
             }}
-            validationSchema={locationValidation}
+            validationSchema={departmentValidation}
           >
             {({
               values,
@@ -68,12 +69,12 @@ export function AddLocationModal({ FetchList }: { FetchList: any }) {
                 <fieldset className="fieldset">
                   <TextInput
                     handleChange={handleChange}
-                    label="Location Name"
-                    name="location"
-                    values={values.location}
-                    errors={errors.location}
-                    placeholder="Location Name"
-                    touched={touched.location}
+                    label="Department Name"
+                    name="department"
+                    values={values.department}
+                    errors={errors.department}
+                    placeholder="Department Name"
+                    touched={touched.department}
                   ></TextInput>
 
                   <div className="modal-action">
@@ -95,7 +96,7 @@ export function AddLocationModal({ FetchList }: { FetchList: any }) {
                         resetForm();
                         (
                           document.getElementById(
-                            "AddLocation"
+                            "AddDepartment"
                           ) as HTMLDialogElement
                         ).close();
                       }}

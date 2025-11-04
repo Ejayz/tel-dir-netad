@@ -12,6 +12,16 @@ export default function ThemeToggle() {
   const [isChecked, setIsChecked] = useState(false);
   // let [ctheme,setCtheme] = useState('light')
 
+  useEffect(() => { // run once per load
+    const cookies = document.cookie;
+    if(!getcookieValue(cookies,'theme')){ //check if cookies have theme value
+       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; // if no theme, check if user prefers dark.
+       if(prefersDark){
+        toggle();
+       }
+    }
+  },[])
+
   useEffect(() => {
 
     const cookies = document.cookie; //get Cookies
@@ -30,7 +40,6 @@ export default function ThemeToggle() {
 
 
   return (
-    //swap swap-rotate
     <label className=" swap swap-rotate rounded-md p-1 hover:bg-gray-600">
       <input
         type="checkbox"

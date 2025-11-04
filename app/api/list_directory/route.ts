@@ -14,15 +14,29 @@ interface Local extends RowDataPacket {
 }
 
 export async function POST(req: NextRequest) {
-  let { orderby, search, local_name,group_name,department_name, page } = await req.json();
+  let { search, local_sort, group_sort, department_sort, location_sort, branch_sort, page } = await req.json();
 
   const connection = await pool.getConnection();
+  let order_string = "";
+  const offset_item = page * 10;
+  if (local_sort || group_sort || department_sort || location_sort || branch_sort) {
+    if (branch_sort) { order_string += ", " + branch_sort };
+    if (department_sort) { order_string += ", " + department_sort };
+    if (location_sort) { order_string += ", " + location_sort };
+    if (group_sort) { order_string += ", " + group_sort };
+    if (local_sort){order_string += ", " + local_sort};
+    order_string = order_string.slice(2);
+  }else {
+    order_string += "local ASC";
+  }
+  
 
   try {
     //Preparation of query. insert conditions for query here
     let query;
+    let query_options;
 
-    if (search || local_name) {
+    if (search) {
       query =
         `SELECT tbl_local.local, tbl_group.group_name , tbl_department.department_name, tbl_location.location_name, tbl_branch.branch_name
         FROM tbl_local 
@@ -30,32 +44,37 @@ export async function POST(req: NextRequest) {
         LEFT JOIN tbl_department ON tbl_group.department_id=tbl_department.department_id 
         LEFT JOIN tbl_location ON tbl_local.location_id=tbl_location.location_id 
         LEFT JOIN tbl_branch ON tbl_location.branch_id=tbl_branch.branch_id 
-        WHERE local LIKE ? AND tbl_local.is_exist=true ORDER BY ${local_name} ${orderby} LIMIT ? , 10`;
-        // `SELECT * FROM tbl_local WHERE local LIKE ? AND is_exist=true ORDER BY ${local_name} ${orderby} LIMIT ? , 10`;
+        WHERE tbl_local.is_exist=true AND (local LIKE ? OR group_name LIKE ? OR department_name LIKE ? OR location_name LIKE ? OR branch_name LIKE ?) 
+        ORDER BY ${order_string} LIMIT 10 OFFSET ?`;
+      query_options = [
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        offset_item,
+      ];
     } else {
       query =
-        `SELECT tbl_local.local, tbl_group.group_name 
+        `SELECT tbl_local.local, tbl_group.group_name , tbl_department.department_name, tbl_location.location_name, tbl_branch.branch_name
         FROM tbl_local 
         LEFT JOIN tbl_group ON tbl_local.group_id=tbl_group.group_id 
-        WHERE local LIKE ? AND tbl_local.is_exist=true ORDER BY  ${local_name} ${orderby}  LIMIT ? , 10`;
-        // `SELECT * FROM tbl_local WHERE local LIKE ? AND is_exist=true ORDER BY  ${local_name} ${orderby}  LIMIT ? , 10`;
-      orderby = "ASC";
-      (search = ""), (local_name = "local");
-      page = 0;
+        LEFT JOIN tbl_department ON tbl_group.department_id=tbl_department.department_id 
+        LEFT JOIN tbl_location ON tbl_local.location_id=tbl_location.location_id 
+        LEFT JOIN tbl_branch ON tbl_location.branch_id=tbl_branch.branch_id 
+        WHERE tbl_local.is_exist=true
+        ORDER BY ${order_string} LIMIT 10 OFFSET ?`;
+      query_options = offset_item;
     }
 
-    let offset_item = page * 10;
 
-    console.log(
-      `SELECT * FROM tbl_local INNER JOIN tbl_group WHERE local LIKE '${`%${search}%`}' ORDER BY ${local_name} ${orderby}  LIMIT ${offset_item} , 10 `
-    );
+
+    console.log("list_directory API: ", query);
 
     // console.log(offset_item);
     //Executuion of Query
-    const [rows, fields] = await connection.query<Local[]>(query, [
-      `%${search}%`,
-      offset_item,
-    ]);
+
+    const [rows, fields] = await connection.query<Local[]>(query, query_options);
     // console.log(rows);
     if (search == "" && rows.length == 0) {
       return NextResponse.json({

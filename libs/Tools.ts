@@ -65,3 +65,10 @@ export const getpayloadValue = (
   }
   return value;
 };
+
+export const querryAll = (
+
+
+) => {
+
+};

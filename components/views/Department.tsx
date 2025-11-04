@@ -1,22 +1,22 @@
 "use client";
 
-import { FaMapLocation, FaSortUp } from "react-icons/fa6";
+import { FaMapLocation, FaSortDown, FaSort, FaSortUp } from "react-icons/fa6";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FaSortDown } from "react-icons/fa";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
-import UpdateLocationModal from "./Modals/Location/UpdateLocationModal";
-import { AddGroupModal } from "./Modals/Group/AddGroupModal";
+import { AddDepartmentModal } from "./Modals/Department/AddDepartmentModal";
+import { RemoveDepartmentModal } from "./Modals/Department/RemoveDepartment";
+import { EditDepartmentModal } from "./Modals/Department/EditDepartment";
 
-export default function Group() {
+export default function Department() {
   const [search, setSearch] = useState("");
-  const [column_name, setColumnName] = useState("location_id");
-  const [orderby, setOrderBy] = useState("ASC");
+  const [department_name, setDepartmentName] = useState("");
   const [page, setPage] = useState(0);
-  const [location_id, setLocationId] = useState();
+  const [department_id, setDepartmentId] = useState(0);
+  const [department_sort, setDepartmentSort] = useState("department_name ASC");
 
-  const { error, data, isFetching, isError, isSuccess ,refetch} = useQuery({
-    queryKey: ["List_Group", search, column_name, orderby, page],
+  const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
+    queryKey: [search, department_sort, page],
     queryFn: async () => {
       console.log(page);
       let headersList = {
@@ -25,13 +25,12 @@ export default function Group() {
         "Content-Type": "application/json",
       };
       let bodyContent = JSON.stringify({
-        orderby: orderby,
         search: search,
-        column_name: column_name,
+        department_sort: department_sort,
         page: page,
       });
 
-      let response = await fetch("/api/authenticated/location/list_location", {
+      let response = await fetch("/api/authenticated/department/list_department", {
         method: "POST",
         headers: headersList,
         body: bodyContent,
@@ -42,14 +41,19 @@ export default function Group() {
     },
   });
 
-  console.log(data);
+  // console.log(data);
   return (
     <div className="w-11/12 mx-auto">
-      <AddGroupModal FetchList={refetch} />
-      <UpdateLocationModal
-        FetchList={refetch}
-        location_id={location_id}
-        setLocationId={setLocationId}
+      <AddDepartmentModal FetchList={refetch} />
+      <RemoveDepartmentModal 
+      FetchList={refetch}
+      department_id={department_id}
+      department_name={department_name}
+      />
+      <EditDepartmentModal 
+      FetchList={refetch}
+      department_id={department_id} 
+      department_name={department_name}
       />
       <div>
         <div className="breadcrumbs text-sm">
@@ -58,7 +62,7 @@ export default function Group() {
               <a>Dashboard</a>
             </li>
             <li>
-              <a>Group Management</a>
+              <a>Department Management</a>
             </li>
           </ul>
         </div>
@@ -98,13 +102,13 @@ export default function Group() {
           <button
             onClick={() => {
               (
-                document.getElementById("AddGroup") as HTMLDialogElement
+                document.getElementById("AddDepartment") as HTMLDialogElement
               ).showModal();
             }}
             className="btn items rounded-md btn-outline btn-primary"
           >
             <FaMapLocation />
-            New Group
+            New Department
           </button>
         </div>
       </div>
@@ -116,39 +120,35 @@ export default function Group() {
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
             <tr>
-             <th>ID</th>
+              <th>#</th>
+              <th // Department
+                className=" cursor-pointer"
+                onClick={() => {
+                  switch (department_sort) {
+                    case "":
+                      setDepartmentSort("department_name ASC");
+                      break;
+                    case "department_name ASC":
+                      setDepartmentSort("department_name DESC");
+                      break;
+                    case "department_name DESC":
+                      setDepartmentSort("");
+                      break;
+                  }
+                }}
+              >
+                <div className="flex flex-row justify-center">
+                  Department
+                  {department_sort == "" ? (
+                    <FaSort className="my-auto mx-2" />
+                  ) : department_sort == "department_name ASC" ? (
+                    <FaSortUp className="my-auto mx-2" />
+                  ) : (
+                    <FaSortDown className="my-auto mx-2" />
+                  )}
+                </div>
+              </th>
 
-              {column_name == "location_name" ? (
-                <th
-                  className=" cursor-pointer"
-                  onClick={() => {
-                    setColumnName("location_name");
-                    if (orderby == "ASC") {
-                      setOrderBy("DESC");
-                    } else {
-                      setOrderBy("ASC");
-                    }
-                  }}
-                >
-                  <div className="flex flex-row justify-center">
-                    Group Name
-                    {orderby == "ASC" ? (
-                      <FaSortUp className="my-auto mx-2" />
-                    ) : (
-                      <FaSortDown className="my-auto mx-2" />
-                    )}
-                  </div>
-                </th>
-              ) : (
-                <th
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setColumnName("location_name");
-                  }}
-                >
-                  Group Name
-                </th>
-              )}
               <th>Action</th>
             </tr>
           </thead>
@@ -180,29 +180,39 @@ export default function Group() {
                   {data.statusText}
                 </td>
               ) : (
-                data.data?.map((location_data: any, index: number) => {
+                data.data?.map((department_data: any, index: number) => {
                   return (
-                    <tr key={index}>
-                      <td>{(page*10)+index+1}</td>
-                      <td>{location_data.location_name}</td>
+                    <tr key={index} className="hover:bg-secondary hover:font-semibold hover:text-primary-content">
+                      <td>{(page * 10) + index + 1}</td>
+                      <td>{department_data.department_name}</td>
+
                       <td>
                         <div className="flex flex-row gap-3 justify-center">
                           <button
                             onClick={() => {
-                              setLocationId(location_data.location_id);
-
+                              setDepartmentId(department_data.department_id);
+                              setDepartmentName(department_data.department_name);
                               (
                                 document.getElementById(
-                                  "UpdateLocation"
+                                  "EditDepartment"
                                 ) as HTMLDialogElement
                               ).showModal();
                             }}
                             className="btn btn-outline btn-sm rounded-md btn-accent"
                           >
                             <RiEdit2Fill />
-                            Update
+                            Edit
                           </button>
-                          <button onClick={()=>{
+
+                          <button onClick={() => {
+                            setDepartmentId(department_data.department_id);
+                            setDepartmentName(department_data.department_name);
+                            console.log(department_name,department_id);
+                            (
+                              document.getElementById(
+                                "RemoveDepartment"
+                              ) as HTMLDialogElement
+                            ).showModal();
                           }} className="btn btn-outline btn-sm rounded-md btn-error">
                             <RiDeleteBin2Fill />
                             Remove
@@ -239,15 +249,14 @@ export default function Group() {
                   setPage(page + 1);
                 }
               }}
-              className={`join-item btn ${
-                !isSuccess
-                  ? ""
-                  : data.status == 404
+              className={`join-item btn ${!isSuccess
+                ? ""
+                : data.status == 404
                   ? "btn-disabled"
                   : data.data.length !== 10
-                  ? "btn-disabled"
-                  : ""
-              }`}
+                    ? "btn-disabled"
+                    : ""
+                }`}
             >
               »
             </button>
