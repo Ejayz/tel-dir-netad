@@ -21,10 +21,7 @@ interface User extends RowDataPacket {
 }
 
 export async function POST(req: NextRequest) {
-  console.log(req);
   const { username, password } = await req.json();
-
-  console.log(await bcrypt.hashSync(password, bcrypt.genSaltSync()));
 
   if (username == "" || password == "") {
     return NextResponse.json(
@@ -39,25 +36,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const prep = "SELECT * FROM tbl_user WHERE username=?  and is_exist=true"
-  const [rows, fields] = await pool.execute<User[]>(prep, [username])
+  const prep = "SELECT * FROM tbl_user WHERE username=?  and is_exist=true";
+  const [rows, fields] = await pool.execute<User[]>(prep, [username]);
 
   let validateAccount = false;
 
   try {
-    validateAccount = bcrypt.compareSync(
-      password,
-      rows[0].password
-    );
-
-  }
-  catch{
-    console.log("Authentication Failed!")
+    validateAccount = bcrypt.compareSync(password, rows[0].password);
+  } catch {
+    console.log("Authentication Failed!");
     console.log(fields);
   }
-  
-
-
 
   if (validateAccount) {
     const authenticationKey = await JWTGenerator(
@@ -82,8 +71,10 @@ export async function POST(req: NextRequest) {
       statusText: `Welcome ${username}.`,
     });
     response.cookies.set("token", authenticationKey, {
-      httpOnly: process.env.NODE_ENV === "production",
-      secure: process.env.NODE_ENV === "production",
+      // httpOnly: process.env.NODE_ENV === "production",
+      // secure: process.env.NODE_ENV === "production",
+      httpOnly: false,
+      secure: false,
       maxAge: 24 * 60 * 60,
     });
     return response;
