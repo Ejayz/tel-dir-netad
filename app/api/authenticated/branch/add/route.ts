@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
     }
   } catch (_e) {
     if (_e instanceof Error) {
-      console.log(_e);
       if (_e.message.includes("Duplicate entry")) {
         return NextResponse.json(
           { status: 409, statusText: `${branch_name} is already exist.` },
