@@ -5,23 +5,23 @@ import * as yup from "yup";
 import { toast } from "react-toastify";
 import { Dispatch, useRef } from "react";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
-export default function UpdateLocationModal({
-  location_id,
-  setLocationId,
-  FetchList
+export default function UpdateBranchModal({
+  data_id,
+  setId,
+  FetchList,
 }: {
-  location_id: number | undefined;
-  setLocationId: any;
-  FetchList:any
+  data_id: number | undefined;
+  setId: any;
+  FetchList: any;
 }) {
   const locationValidation = yup.object({
-    location: yup.string().required(),
+    branch_name: yup.string().required("Branch Name is required."),
   });
 
   const UpdateLocation = useRef<HTMLDialogElement>(null);
 
   const { data, isFetching, isSuccess, isError } = useQuery({
-    queryKey: ["RetrieveLocation", location_id],
+    queryKey: ["RetrieveLocation", data_id],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -30,10 +30,10 @@ export default function UpdateLocationModal({
       };
 
       let bodyContent = JSON.stringify({
-        location_id: location_id,
+        location_id: data_id,
       });
 
-      let response = await fetch("/api/authenticated/location/retrieve_location", {
+      let response = await fetch("/api/authenticated/branch/retrieve_branch", {
         method: "POST",
         body: bodyContent,
         headers: headersList,
@@ -49,22 +49,21 @@ export default function UpdateLocationModal({
     },
   });
 
-  console.log(data);
   return (
     <>
       <dialog id="UpdateLocation" ref={UpdateLocation} className="modal">
         <div className="modal-box">
-          <h3 className="text-lg font-bold">Add Local</h3>
+          <h3 className="text-lg font-bold">Update Branch</h3>
 
           <Formik
             initialValues={{
-              location: location_id,
-              location_name: isError
+              branch_id: data_id,
+              branch_name: isError
                 ? ""
                 : isFetching
                 ? ""
                 : data.status == 200
-                ? data.data[0].location_name
+                ? data.data[0].branch_name
                 : "",
             }}
             enableReinitialize
@@ -76,12 +75,12 @@ export default function UpdateLocationModal({
               };
 
               let bodyContent = JSON.stringify({
-                location_id: values.location,
-                location_name: values.location_name,
+                branch_id: values.branch_id,
+                branch_name: values.branch_name,
               });
 
               let response = await fetch(
-                "/api/authenticated/location/update_location",
+                "/api/authenticated/branch/update_branch",
                 {
                   method: "POST",
                   body: bodyContent,
@@ -90,16 +89,14 @@ export default function UpdateLocationModal({
               );
 
               let data = await response.json();
-              console.log(data);
               if (data.status == 200) {
-                console.log("Triggerted");
                 toast.success(data.statusText);
                 UpdateLocation.current?.close();
                 action.resetForm();
-                setLocationId(null);
-                FetchList()
+                setId(null);
+                FetchList();
               } else {
-                toast.error(data.statusText);
+                action.setErrors({ branch_name: data.statusText });
               }
             }}
             validationSchema={locationValidation}
@@ -127,12 +124,12 @@ export default function UpdateLocationModal({
                   ) : (
                     <TextInput
                       handleChange={handleChange}
-                      label="Location Name"
-                      name="location_name"
-                      values={values.location_name}
-                      errors={errors.location_name}
-                      placeholder="Location Name"
-                      touched={touched.location_name}
+                      label="Branch Name"
+                      name="branch_name"
+                      values={values.branch_name}
+                      errors={errors.branch_name}
+                      placeholder="Branch Name"
+                      touched={touched.branch_name}
                     ></TextInput>
                   )}
 
