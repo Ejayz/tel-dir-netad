@@ -1,15 +1,14 @@
 import { Navigations } from "@/components/Navigations";
-import Local from "@/components/views/Local";
+import Department from "@/components/views/Department";
+
 
 export default function Home() {
   return (
     <>
       <main className="flex flex-col  items-center min-h-screen min-w-full sm:items-start">
-        
         <Navigations>
-          <Local />
+         <Department />
         </Navigations>
-        
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a

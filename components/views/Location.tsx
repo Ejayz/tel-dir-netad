@@ -119,7 +119,7 @@ export default function Location() {
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
             <tr>
-             <th>ID</th>
+             <th>#</th>
 
               {column_name == "location_name" ? (
                 <th
@@ -186,7 +186,7 @@ export default function Location() {
                 data.data?.map((location_data: any, index: number) => {
                   return (
                     <tr key={index}>
-                      <td>{index+1}</td>
+                      <td>{(page*10)+index+1}</td>
                       <td>{location_data.location_name}</td>
                       <td>
                         <div className="flex flex-row gap-3 justify-center">

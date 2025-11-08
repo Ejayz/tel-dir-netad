@@ -58,7 +58,7 @@ export default function Group() {
               <a>Dashboard</a>
             </li>
             <li>
-              <a>Location Management</a>
+              <a>Group Management</a>
             </li>
           </ul>
         </div>
@@ -183,7 +183,7 @@ export default function Group() {
                 data.data?.map((location_data: any, index: number) => {
                   return (
                     <tr key={index}>
-                      <td>{index+1}</td>
+                      <td>{(page*10)+index+1}</td>
                       <td>{location_data.location_name}</td>
                       <td>
                         <div className="flex flex-row gap-3 justify-center">

@@ -1,6 +1,9 @@
 import { pool } from "@/libs/db";
-import { QueryResult, ResultSetHeader, RowDataPacket } from "mysql2";
+import { RowDataPacket } from "mysql2";
 import { NextRequest, NextResponse } from "next/server";
+import jsonwebtoken from "jsonwebtoken";
+import { getpayloadValue } from "@/libs/Tools";
+
 
 interface Local extends RowDataPacket {
   local: number;
@@ -29,6 +32,25 @@ export async function POST(req: NextRequest) {
   }else {
     order_string += "local ASC";
   }
+  let querry_branch = '';
+  let branch = '';
+  const token = req.cookies.get('token')?.value || "";
+  try {
+    // console.log(token);
+    // const decodedH = decodeJwt(token.value.toString()).payload;
+    if (token) {
+      const payload = await jsonwebtoken.decode(token);
+      branch = getpayloadValue(JSON.stringify(payload), 'branch_id')
+      // console.log("list_local API:",branch);
+    }
+  }
+  catch (e) {
+    console.log(e);
+  }
+
+  if (branch != '0'){
+    querry_branch = 'AND tbl_branch.branch_id=' + branch +' '
+  }
   
 
   try {
@@ -44,7 +66,7 @@ export async function POST(req: NextRequest) {
         LEFT JOIN tbl_department ON tbl_group.department_id=tbl_department.department_id 
         LEFT JOIN tbl_location ON tbl_local.location_id=tbl_location.location_id 
         LEFT JOIN tbl_branch ON tbl_location.branch_id=tbl_branch.branch_id 
-        WHERE tbl_local.is_exist=true AND (local LIKE ? OR group_name LIKE ? OR department_name LIKE ? OR location_name LIKE ? OR branch_name LIKE ?) 
+        WHERE tbl_local.is_exist=true ${querry_branch} AND (local LIKE ? OR group_name LIKE ? OR department_name LIKE ? OR location_name LIKE ? OR branch_name LIKE ?) 
         ORDER BY ${order_string} LIMIT 10 OFFSET ?`;
       query_options = [
         `%${search}%`,
@@ -62,7 +84,7 @@ export async function POST(req: NextRequest) {
         LEFT JOIN tbl_department ON tbl_group.department_id=tbl_department.department_id 
         LEFT JOIN tbl_location ON tbl_local.location_id=tbl_location.location_id 
         LEFT JOIN tbl_branch ON tbl_location.branch_id=tbl_branch.branch_id 
-        WHERE tbl_local.is_exist=true
+        WHERE tbl_local.is_exist=true ${querry_branch} 
         ORDER BY ${order_string} LIMIT 10 OFFSET ?`;
       query_options = offset_item;
     }
