@@ -40,9 +40,8 @@ export function AddBranchModal({ FetchList }: { FetchList: any }) {
               });
 
               let data = await response.json();
-  
+
               if (data.status == 200) {
-                console.log("Triggerted");
                 toast.success(data.statusText);
                 AddBranch.current?.close();
                 action.resetForm();
@@ -93,7 +92,7 @@ export function AddBranchModal({ FetchList }: { FetchList: any }) {
                         resetForm();
                         (
                           document.getElementById(
-                            "AddLocation"
+                            "AddBranch"
                           ) as HTMLDialogElement
                         ).close();
                       }}

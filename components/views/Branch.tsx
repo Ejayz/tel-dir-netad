@@ -7,18 +7,19 @@ import { FaSortDown } from "react-icons/fa";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
 import UpdateLocationModal from "./Modals/Location/UpdateLocationModal";
 import { AddBranchModal } from "./Modals/Branch/AddBranchModal";
+import UpdateBranchModal from "./Modals/Branch/UpdateBranchModal";
+import { toast } from "react-toastify";
 
 export default function Branch() {
   const [search, setSearch] = useState("");
-  const [column_name, setColumnName] = useState("location_id");
+  const [column_name, setColumnName] = useState("branch_id");
   const [orderby, setOrderBy] = useState("ASC");
   const [page, setPage] = useState(0);
-  const [location_id, setLocationId] = useState();
+  const [id, setId] = useState();
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: ["List_Group", search, column_name, orderby, page],
+    queryKey: ["Branch_Group", search, column_name, orderby, page],
     queryFn: async () => {
-      console.log(page);
       let headersList = {
         Accept: "*/*",
         "User-Agent": "Thunder Client (https://www.thunderclient.com)",
@@ -31,7 +32,7 @@ export default function Branch() {
         page: page,
       });
 
-      let response = await fetch("/api/authenticated/location/list_location", {
+      let response = await fetch("/api/authenticated/branch/list_branch", {
         method: "POST",
         headers: headersList,
         body: bodyContent,
@@ -45,11 +46,7 @@ export default function Branch() {
   return (
     <div className="w-11/12 mx-auto">
       <AddBranchModal FetchList={refetch} />
-      <UpdateLocationModal
-        FetchList={refetch}
-        location_id={location_id}
-        setLocationId={setLocationId}
-      />
+      <UpdateBranchModal FetchList={refetch} data_id={id} setId={setId} />
       <div>
         <div className="text-sm breadcrumbs">
           <ul>
@@ -179,16 +176,16 @@ export default function Branch() {
                   {data.statusText}
                 </td>
               ) : (
-                data.data?.map((location_data: any, index: number) => {
+                data.data?.map((data: any, index: number) => {
                   return (
                     <tr key={index}>
-                      <td>{(page*10)+index+1}</td>
-                      <td>{location_data.location_name}</td>
+                      <td>{index + 1}</td>
+                      <td>{data.branch_name}</td>
                       <td>
                         <div className="flex flex-row justify-center gap-3">
                           <button
                             onClick={() => {
-                              setLocationId(location_data.location_id);
+                              setId(data.branch_id);
 
                               (
                                 document.getElementById(
@@ -202,7 +199,36 @@ export default function Branch() {
                             Update
                           </button>
                           <button
-                            onClick={() => {}}
+                            onClick={async () => {
+                              let headersList = {
+                                Accept: "*/*",
+                                "User-Agent":
+                                  "Thunder Client (https://www.thunderclient.com)",
+                                "Content-Type": "application/json",
+                              };
+
+                              let bodyContent = JSON.stringify({
+                                branch_id: data.branch_id,
+                              });
+
+                              let response = await fetch(
+                                "/api/authenticated/branch/remove_branch",
+                                {
+                                  method: "POST",
+                                  body: bodyContent,
+                                  headers: headersList,
+                                }
+                              );
+
+                              let resp = await response.json();
+
+                              if (resp.status == 200) {
+                                refetch();
+                                toast.success(resp.statusText);
+                              } else {
+                                toast.error(resp.statusText);
+                              }
+                            }}
                             className="rounded-md btn btn-outline btn-sm btn-error"
                           >
                             <RiDeleteBin2Fill />
