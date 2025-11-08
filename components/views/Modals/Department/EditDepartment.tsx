@@ -16,7 +16,9 @@ export function EditDepartmentModal({
     department_name: string
 }) {
     const departmentValidation = yup.object({
-        department: yup.string().required(),
+        department: yup.string()
+            .matches(/^[a-zA-Z_-]+$/,'Sorry. Only letters underscore and dash can be used.')
+            .required("Empty Name is Invalid"),
     });
 
     const EditDepartment = useRef<HTMLDialogElement>(null);
@@ -53,7 +55,6 @@ export function EditDepartmentModal({
                             );
 
                             let data = await response.json();
-                            console.log(data);
                             switch (data.status) {
                                 case 200:
                                     toast.success(data.statusText);

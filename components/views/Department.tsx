@@ -3,7 +3,7 @@
 import { FaMapLocation, FaSortDown, FaSort, FaSortUp } from "react-icons/fa6";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
+import { RiBillLine, RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
 import { AddDepartmentModal } from "./Modals/Department/AddDepartmentModal";
 import { RemoveDepartmentModal } from "./Modals/Department/RemoveDepartment";
 import { EditDepartmentModal } from "./Modals/Department/EditDepartment";
@@ -114,7 +114,7 @@ export default function Department() {
       </div>
       <div className="divider"></div>
       <div className="overflow-x-auto w-11/12 mx-auto">
-        <table className="table table-zebra text-center">
+        <table className="table table-zebra text-center text-lg">
           {/* head */}
           <thead
             className={`${isFetching ? "invisible" : "table-header-group"}`}
@@ -122,7 +122,7 @@ export default function Department() {
             <tr>
               <th>#</th>
               <th // Department
-                className=" cursor-pointer"
+                className=" cursor-pointer w-1/3"
                 onClick={() => {
                   switch (department_sort) {
                     case "":
@@ -148,7 +148,8 @@ export default function Department() {
                   )}
                 </div>
               </th>
-
+              <th >Groups</th>
+              <th>Locals</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -157,12 +158,14 @@ export default function Department() {
 
             {isError || error ? (
               <tr>
+                <td></td>
                 <td colSpan={3} className="font-xl text-center text-error">
                   Something went wrong while we retrieve data.
                 </td>
               </tr>
             ) : isFetching ? (
               <tr>
+                <td></td>
                 <td colSpan={3} className="font-xl text-center text-info">
                   Please wait while we load your data
                   <div className="loading loading-infinity "></div>
@@ -181,12 +184,47 @@ export default function Department() {
                 </td>
               ) : (
                 data.data?.map((department_data: any, index: number) => {
+                  const group_num = department_data.group_list?.length;
+                  let group_array=[];
+                  let local_list="";
+                  let local_num = 0;
+                  for(let i=0;i<group_num;i++){
+                    const local_count = department_data.group_list[i].local_list?.length;
+                    local_num+= local_count
+                    group_array[i] = department_data.group_list[i]
+                    let j=0;
+                    while(j<local_count){
+                      local_list+=group_array[i].local_list[j]?.local;
+                      local_list+=", ";
+                      j++;
+                    }
+                  }
+                  local_list = local_list.slice(0,local_list.length - 2)
                   return (
                     <tr key={index} className="hover:bg-secondary hover:font-semibold hover:text-primary-content">
-                      <td>{(page * 10) + index + 1}</td>
+                      <td className="w-2">{(page * 10) + index + 1}</td>
                       <td>{department_data.department_name}</td>
-
-                      <td>
+                      <td>{<details>
+                        <summary>{group_num}</summary>
+                        <ul className="text-left">
+                      {
+                        group_array.map((g_array:any, jndex: number)=>{
+                          return(
+                            <li key={jndex} className="text-sm">{(jndex+1)+'. '+g_array.group_name+'['+g_array.local_list?.length+']'}</li>
+                          );
+                        })
+                      }
+                      </ul>
+                        
+                      </details>}</td>
+                      <td>{
+                        <details>
+                          <summary>{local_num}</summary>
+                          <p>{local_list}</p>
+                        </details>
+                        }
+                      </td>
+                      <td className="w-1/20">
                         <div className="flex flex-row gap-3 justify-center">
                           <button
                             onClick={() => {
@@ -221,6 +259,7 @@ export default function Department() {
                       </td>
                     </tr>
                   );
+
                 })
               )
             ) : (

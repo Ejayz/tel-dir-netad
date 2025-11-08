@@ -8,7 +8,9 @@ import { useRef } from "react";
 
 export function AddDepartmentModal({ FetchList }: { FetchList: any }) {
   const departmentValidation = yup.object({
-    department: yup.string().required(),
+    department: yup.string()
+      .matches(/^[a-zA-Z_-]+$/,'Sorry. Only letters, underscore and dash can be used.')
+      .required("Empty Name is Invalid"),
   });
 
   const AddDepartment = useRef<HTMLDialogElement>(null);
@@ -43,9 +45,7 @@ export function AddDepartmentModal({ FetchList }: { FetchList: any }) {
               );
 
               let data = await response.json();
-              console.log(data);
               if (data.status == 200) {
-                console.log("Triggerted"); //dafuq? naa man gud triggered na word.
                 toast.success(data.statusText);
                 AddDepartment.current?.close();
                 action.resetForm();

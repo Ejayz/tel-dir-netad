@@ -3,7 +3,7 @@ import { FaMapLocation, FaSortUp, FaSort } from "react-icons/fa6";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { FaSortDown } from "react-icons/fa";
-import { group } from "node:console";
+
 
 
 
@@ -20,7 +20,6 @@ export default function DirectorySearch() {
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
     queryKey: [search, local_sort, group_sort, department_sort, location_sort, branch_sort, page],
     queryFn: async () => {
-      // console.log(page);
       let headersList = {
         Accept: "*/*",
         "User-Agent": "Thunder Client (https://www.thunderclient.com)",
@@ -41,9 +40,7 @@ export default function DirectorySearch() {
         headers: headersList,
         body: bodyContent,
       });
-      // console.log(response);
       let data = await response.json();
-      console.log("Directory_list Response:",data);
       return data;
     },
   });
