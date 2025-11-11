@@ -1,22 +1,29 @@
 "use client";
-
 import { FaPlus } from "react-icons/fa6";
 import { Formik, Form , Field} from "formik";
 import { TextInput, SelectInput } from "../../../ui/InputFields";
 import * as yup from "yup";
 import { toast } from "react-toastify";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 interface Select {
   id:string|number,
   placeholder:string
 }
 
-export function AddGroupModal({ 
+export function EditGroupModal({ 
   FetchList, 
+  group_id,
+  group_name,
+  department_name,
+  department_id,
   department_list 
 }: { 
   FetchList: any ,
+  group_id: number,
+  group_name: string,
+  department_name: string,
+  department_id: number,
   department_list:{data:{department_id:number , department_name: string}[]
 }}) {
 
@@ -27,27 +34,27 @@ let d_array:Select[] = [];
     d_array.push({id:department_list.data[i].department_id,placeholder:department_list.data[i].department_name})
     i++;
   }
-
+  console.log(d_array);
 
   const Validation = yup.object({
     group: yup.string()
-      .matches(/^[a-zA-Z _-]+$/, 'Sorry. Only letters, underscore and dash can be used.')
+      .matches(/^[a-zA-Z _()-]+$/, 'Sorry. Only letters, underscore and dash can be used.')
       .required("Empty Name is Invalid"),
   });
  
   const Dialog = useRef<HTMLDialogElement>(null);
   return (
     <>
-      <dialog id="AddGroup" ref={Dialog} className="modal">
+      <dialog id="EditGroup" ref={Dialog} className="modal">
         <div className="modal-box">
-          <h3 className="text-lg font-bold">Add Group</h3>
+          <h3 className="text-lg font-bold">Edit Group</h3>
             <Formik
+              enableReinitialize={true}
               initialValues={{
-                group: "",
-                department: "No Department",
+                group: group_name || "",
+                department: department_id,
               }}
               onSubmit={async (values, action) => {
-                console.log("API:Sending")
 
                 let headersList = {
                   Accept: "*/*",
@@ -56,12 +63,13 @@ let d_array:Select[] = [];
                 };
 
                 let bodyContent = JSON.stringify({
+                  group_id: group_id,
                   group_name: values.group,
-                  department_name: values.department,
+                  department_id: values.department,
                 });
 
                 let response = await fetch(
-                  "/api/authenticated/group/add_group",
+                  "/api/authenticated/group/edit_group",
                   {
                     method: "POST",
                     body: bodyContent,
@@ -70,7 +78,6 @@ let d_array:Select[] = [];
                 );
 
                 let data = await response.json();
-                console.log(data);
                 if (data.status == 200) {
                   toast.success(data.statusText);
                   Dialog.current?.close();
@@ -102,7 +109,6 @@ let d_array:Select[] = [];
                     placeholder="Group Name"
                     touched={touched.group}
                   ></TextInput>
-                  
                   <div className="items-end flex justify-between">
                     <div className="w-4/5 pr-1">
                       <SelectInput
@@ -131,7 +137,7 @@ let d_array:Select[] = [];
                       
                       ><FaPlus /></button>
                     </div>
-                    </div>
+                  </div>
                   <div className="modal-action">
                     <button
                       type="submit"
@@ -139,7 +145,7 @@ let d_array:Select[] = [];
                         } `}
                     >
                       {!isSubmitting ? (
-                        <>Add</>
+                        <>Done</>
                       ) : (
                         <div className="loading-infinity loading loading-xl"></div>
                       )}
@@ -151,7 +157,7 @@ let d_array:Select[] = [];
                         resetForm();
                         (
                           document.getElementById(
-                            "AddGroup"
+                            "EditGroup"
                           ) as HTMLDialogElement
                         ).close();
                       }}
