@@ -1,37 +1,23 @@
 "use client";
 
 import { Formik, Form } from "formik";
-import { TextInput } from "../../../ui/InputFields";
-import * as yup from "yup";
 import { toast } from "react-toastify";
 import { useRef } from "react";
 
-export function EditDepartmentModal({
-    FetchList,
-    department_id,
-    department_name
-}: {
-    FetchList: any,
-    department_id: number,
-    department_name: string
-}) {
-    const departmentValidation = yup.object({
-        department: yup.string()
-            .matches(/^[a-zA-Z _-]+$/,'Sorry. Only letters underscore and dash can be used.')
-            .required("Empty Name is Invalid"),
-    });
-
-    const EditDepartment = useRef<HTMLDialogElement>(null);
-
+export function RemoveGroupModal({
+    FetchList, group_id, group_name }: {
+        FetchList: any, group_id: number, group_name?: string
+    }) {
+    const RemoveGroup = useRef<HTMLDialogElement>(null);
+     // console.log("RemoveGroup Modal:",group_id,group_name);
     return (
         <>
-            <dialog id="EditDepartment" ref={EditDepartment} className="modal">
+            <dialog id="RemoveGroup" ref={RemoveGroup} className="modal">
                 <div className="modal-box">
-                    <h3 className="text-lg font-bold">Edit Department</h3>
+                    <h3 className="text-lg font-bold">Do you want to remove:</h3>
+                    <p className="py-4 font-semibold">{group_name + " ?"}</p>
                     <Formik
-                        enableReinitialize={true}
                         initialValues={{
-                            department: department_name || "",
                         }}
                         onSubmit={async (values, action) => {
                             let headersList = {
@@ -41,12 +27,11 @@ export function EditDepartmentModal({
                             };
 
                             let bodyContent = JSON.stringify({
-                                department_id: department_id.toString(),
-                                department_name: values.department,
+                                group_id: group_id
                             });
 
                             let response = await fetch(
-                                "/api/authenticated/department/edit_department",
+                                "/api/authenticated/group/remove_group",
                                 {
                                     method: "POST",
                                     body: bodyContent,
@@ -55,22 +40,23 @@ export function EditDepartmentModal({
                             );
 
                             let data = await response.json();
-                            switch (data.status) {
-                                case 200:
-                                    toast.success(data.statusText);
-                                    EditDepartment.current?.close();
-                                    action.resetForm();
-                                    FetchList();
-                                    break;
-                                case 501:
-                                    toast.error(data.statusText);
-                                    break;
-                                default:
-                                    toast.error(data.statusText);
-                                    break;
+                            // console.log(data);
+                            if (data.status == 200) {
+                                console.log("Triggerted"); //dafuq? naa man gud triggered na word.
+                                toast.success(data.statusText);
+                                RemoveGroup.current?.close();
+                                action.resetForm();
+                                FetchList();
+                                (
+                                    document.getElementById(
+                                        "RemoveGroup"
+                                    ) as HTMLDialogElement
+                                ).close();
+
+                            } else {
+                                toast.error(data.statusText);
                             }
                         }}
-                        validationSchema={departmentValidation}
                     >
                         {({
                             values,
@@ -83,24 +69,14 @@ export function EditDepartmentModal({
                         }) => (
                             <Form className="card-body">
                                 <fieldset className="fieldset">
-                                    <TextInput
-                                        handleChange={handleChange}
-                                        label="Department Name"
-                                        name="department"
-                                        values={values.department}
-                                        errors={errors.department}
-                                        placeholder="Department Name"
-                                        touched={touched.department}
-                                    ></TextInput>
-
                                     <div className="modal-action">
                                         <button
                                             type="submit"
-                                            className={`btn btn-outline rounded-md ${!isSubmitting ? "btn-accent" : "btn-disabled"
+                                            className={`btn btn-outline rounded-md ${!isSubmitting ? "btn-error" : "btn-disabled"
                                                 } `}
                                         >
                                             {!isSubmitting ? (
-                                                <>Done</>
+                                                <>Delete</>
                                             ) : (
                                                 <div className="loading-infinity loading loading-xl"></div>
                                             )}
@@ -111,7 +87,7 @@ export function EditDepartmentModal({
                                                 resetForm();
                                                 (
                                                     document.getElementById(
-                                                        "EditDepartment"
+                                                        "RemoveGroup"
                                                     ) as HTMLDialogElement
                                                 ).close();
                                             }}

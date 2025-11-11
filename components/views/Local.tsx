@@ -130,7 +130,7 @@ export default function Local() {
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
             <tr>
-              <th>ID</th>
+              <th>#</th>
               <th
                 className=" cursor-pointer"
                 onClick={() => {
@@ -300,7 +300,7 @@ export default function Local() {
               ) : (
                 data.data?.map((local_data: any, index: number) => {
                   return (
-                    <tr key={index}>
+                    <tr key={index} className="hover:bg-secondary hover:font-semibold hover:text-primary-content">
                       <td>{(page * 10) + index + 1}</td>
                       <td>{local_data.local}</td>
                       <td></td>

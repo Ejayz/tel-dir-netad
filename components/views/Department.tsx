@@ -1,6 +1,6 @@
 "use client";
 
-import { FaMapLocation, FaSortDown, FaSort, FaSortUp } from "react-icons/fa6";
+import { FaPlus, FaSortDown, FaSort, FaSortUp, FaOldRepublic } from "react-icons/fa6";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { RiBillLine, RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
@@ -18,7 +18,6 @@ export default function Department() {
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
     queryKey: [search, department_sort, page],
     queryFn: async () => {
-      console.log(page);
       let headersList = {
         Accept: "*/*",
         "User-Agent": "Thunder Client (https://www.thunderclient.com)",
@@ -107,7 +106,7 @@ export default function Department() {
             }}
             className="btn items rounded-md btn-outline btn-primary"
           >
-            <FaMapLocation />
+            <FaPlus />
             New Department
           </button>
         </div>
@@ -148,7 +147,7 @@ export default function Department() {
                   )}
                 </div>
               </th>
-              <th >Groups</th>
+              <th>Groups</th>
               <th>Locals</th>
               <th>Action</th>
             </tr>
@@ -159,12 +158,14 @@ export default function Department() {
             {isError || error ? (
               <tr>
                 <td></td>
+                <td></td>
                 <td colSpan={3} className="font-xl text-center text-error">
                   Something went wrong while we retrieve data.
                 </td>
               </tr>
             ) : isFetching ? (
               <tr>
+                <td></td>
                 <td></td>
                 <td colSpan={3} className="font-xl text-center text-info">
                   Please wait while we load your data

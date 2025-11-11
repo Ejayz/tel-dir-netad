@@ -1,37 +1,42 @@
 "use client";
 
-import { FaMapLocation, FaSortUp } from "react-icons/fa6";
+import { FaPlus, FaSortUp, FaSortDown, FaSort  } from "react-icons/fa6";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FaSortDown } from "react-icons/fa";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
-import UpdateLocationModal from "./Modals/Location/UpdateLocationModal";
 import { AddGroupModal } from "./Modals/Group/AddGroupModal";
+import { EditGroupModal } from "./Modals/Group/EditGroup";
+import { RemoveGroupModal } from "./Modals/Group/RemoveGroup";
+import { AddDepartmentModal } from "./Modals/Department/AddDepartmentModal";
+import { group } from "console";
 
 export default function Group() {
   const [search, setSearch] = useState("");
-  const [column_name, setColumnName] = useState("location_id");
-  const [orderby, setOrderBy] = useState("ASC");
+  const [group_name, setGroupName] = useState("");
   const [page, setPage] = useState(0);
-  const [location_id, setLocationId] = useState();
+  const [group_id, setGroupId] = useState(0);
+  const [group_sort, setGroupSort] = useState("group_name ASC");
+  const [department_sort, setDepartmentSort] = useState("")
+  const [department_name, setDepartmentName]= useState("");
+  const [department_id, setDepartmentId] = useState(-1);
+ const [department_list, setDepartmentList] = useState({data:[{department_id : 0, department_name : "test"}]})
 
-  const { error, data, isFetching, isError, isSuccess ,refetch} = useQuery({
-    queryKey: ["List_Group", search, column_name, orderby, page],
+  const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
+    queryKey: [search, group_name, group_sort, department_sort, page],
     queryFn: async () => {
-      console.log(page);
       let headersList = {
         Accept: "*/*",
         "User-Agent": "Thunder Client (https://www.thunderclient.com)",
         "Content-Type": "application/json",
       };
       let bodyContent = JSON.stringify({
-        orderby: orderby,
         search: search,
-        column_name: column_name,
+        group_sort: group_sort,
+        department_sort: department_sort,
         page: page,
       });
 
-      let response = await fetch("/api/authenticated/location/list_location", {
+      let response = await fetch("/api/authenticated/group/list_group", {
         method: "POST",
         headers: headersList,
         body: bodyContent,
@@ -41,15 +46,49 @@ export default function Group() {
       return data;
     },
   });
+    const { error:d_error, data:d_data, isFetching:d_isFetching, isError:d_isError, isSuccess:d_isSuccess , refetch:d_refetch} = useQuery({
+    queryKey:[],
+    queryFn: async () => {
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
+      let bodyContent = JSON.stringify({
+      });
 
-  console.log(data);
+      let response = await fetch("api/authenticated/department/list_department_only",{
+        method: "POST",
+        headers: headersList,
+        body: bodyContent,
+      });
+      let data = await response.json();
+      console.log("Fetch Dept. List");
+      setDepartmentList(data);
+      return data;
+      }
+  });
+
+
+
   return (
     <div className="w-11/12 mx-auto">
-      <AddGroupModal FetchList={refetch} />
-      <UpdateLocationModal
-        FetchList={refetch}
-        location_id={location_id}
-        setLocationId={setLocationId}
+      
+      <AddGroupModal 
+      FetchList={refetch} 
+      department_list={department_list}/>
+      <AddDepartmentModal FetchList={d_refetch} />
+      <EditGroupModal
+      FetchList={refetch}
+      group_id={group_id}
+      group_name={group_name}
+      department_name={department_name}
+      department_id ={department_id}
+      department_list={department_list}/>
+      <RemoveGroupModal
+      FetchList={refetch}
+      group_id={group_id}
+      group_name={group_name}
       />
       <div>
         <div className="breadcrumbs text-sm">
@@ -97,58 +136,83 @@ export default function Group() {
         <div className="flex-5 flex flex-col items-end">
           <button
             onClick={() => {
+              // setDepartmentList(d_data);
               (
                 document.getElementById("AddGroup") as HTMLDialogElement
               ).showModal();
             }}
             className="btn items rounded-md btn-outline btn-primary"
           >
-            <FaMapLocation />
+            <FaPlus />
             New Group
           </button>
         </div>
       </div>
       <div className="divider"></div>
       <div className="overflow-x-auto w-11/12 mx-auto">
-        <table className="table table-zebra text-center">
+        <table className="table table-zebra text-center text-lg">
           {/* head */}
           <thead
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
             <tr>
-             <th>ID</th>
+              <th>ID</th>
 
-              {column_name == "location_name" ? (
-                <th
-                  className=" cursor-pointer"
-                  onClick={() => {
-                    setColumnName("location_name");
-                    if (orderby == "ASC") {
-                      setOrderBy("DESC");
-                    } else {
-                      setOrderBy("ASC");
-                    }
-                  }}
-                >
-                  <div className="flex flex-row justify-center">
-                    Group Name
-                    {orderby == "ASC" ? (
-                      <FaSortUp className="my-auto mx-2" />
-                    ) : (
-                      <FaSortDown className="my-auto mx-2" />
-                    )}
-                  </div>
-                </th>
-              ) : (
-                <th
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setColumnName("location_name");
-                  }}
-                >
-                  Group Name
-                </th>
-              )}
+              <th // Group
+                className=" cursor-pointer w-1/3"
+                onClick={() => {
+                  switch (group_sort) {
+                    case "":
+                      setGroupSort("group_name ASC");
+                      break;
+                    case "group_name ASC":
+                      setGroupSort("group_name DESC");
+                      break;
+                    case "group_name DESC":
+                      setGroupSort("");
+                      break;
+                  }
+                }}
+              >
+                <div className="flex flex-row justify-center">
+                  Group
+                  {group_sort == "" ? (
+                    <FaSort className="my-auto mx-2" />
+                  ) : group_sort == "group_name ASC" ? (
+                    <FaSortUp className="my-auto mx-2" />
+                  ) : (
+                    <FaSortDown className="my-auto mx-2" />
+                  )}
+                </div>
+              </th>
+              <th // Department
+                className=" cursor-pointer"
+                onClick={() => {
+                  switch (department_sort) {
+                    case "":
+                      setDepartmentSort("department_name ASC");
+                      break;
+                    case "department_name ASC":
+                      setDepartmentSort("department_name DESC");
+                      break;
+                    case "department_name DESC":
+                      setDepartmentSort("");
+                      break;
+                  }
+                }}
+              >
+                <div className="flex flex-row justify-center">
+                  Department
+                  {department_sort == "" ? (
+                    <FaSort className="my-auto mx-2" />
+                  ) : department_sort == "department_name ASC" ? (
+                    <FaSortUp className="my-auto mx-2" />
+                  ) : (
+                    <FaSortDown className="my-auto mx-2" />
+                  )}
+                </div>
+              </th>
+              <th>locals</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -180,29 +244,53 @@ export default function Group() {
                   {data.statusText}
                 </td>
               ) : (
-                data.data?.map((location_data: any, index: number) => {
+                data.data?.map((group_data: any, index: number) => {
+                  let local_num = group_data.local_list.length;
+                  let local_list = '';
+                  if(local_num){
+                    let i = 0;
+                    while(i<local_num){
+                      local_list += group_data.local_list[i].local +', ';
+                      i++;
+                    }
+                    local_list = local_list.slice(0,local_list.length -2)
+                  }
                   return (
-                    <tr key={index}>
-                      <td>{(page*10)+index+1}</td>
-                      <td>{location_data.location_name}</td>
+                    <tr key={index} className="hover:bg-secondary hover:font-semibold hover:text-primary-content">
+                      <td>{(page * 10) + index + 1}</td>
+                      <td>{group_data.group_name}</td>
+                      <td>{group_data.department_name}</td>
+                      <td><details>
+                        <summary>{local_num}</summary>
+                        <p>{local_list}</p>
+                        </details></td>
                       <td>
                         <div className="flex flex-row gap-3 justify-center">
                           <button
                             onClick={() => {
-                              setLocationId(location_data.location_id);
-
+                              setGroupId(group_data.group_id);
+                              setGroupName(group_data.group_name);
+                              setDepartmentName(group_data.department_name);
+                              setDepartmentId(group_data.department_id);
                               (
                                 document.getElementById(
-                                  "UpdateLocation"
+                                  "EditGroup"
                                 ) as HTMLDialogElement
                               ).showModal();
                             }}
                             className="btn btn-outline btn-sm rounded-md btn-accent"
                           >
                             <RiEdit2Fill />
-                            Update
+                            Edit
                           </button>
-                          <button onClick={()=>{
+                          <button onClick={() => {
+                            setGroupId(group_data.group_id);
+                            setGroupName(group_data.group_name);
+                            (
+                                document.getElementById(
+                                  "RemoveGroup"
+                                ) as HTMLDialogElement
+                              ).showModal();
                           }} className="btn btn-outline btn-sm rounded-md btn-error">
                             <RiDeleteBin2Fill />
                             Remove
@@ -239,15 +327,14 @@ export default function Group() {
                   setPage(page + 1);
                 }
               }}
-              className={`join-item btn ${
-                !isSuccess
+              className={`join-item btn ${!isSuccess
                   ? ""
                   : data.status == 404
-                  ? "btn-disabled"
-                  : data.data.length !== 10
-                  ? "btn-disabled"
-                  : ""
-              }`}
+                    ? "btn-disabled"
+                    : data.data.length !== 10
+                      ? "btn-disabled"
+                      : ""
+                }`}
             >
               »
             </button>

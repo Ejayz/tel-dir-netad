@@ -9,7 +9,7 @@ import { useRef } from "react";
 export function AddDepartmentModal({ FetchList }: { FetchList: any }) {
   const departmentValidation = yup.object({
     department: yup.string()
-      .matches(/^[a-zA-Z_-]+$/,'Sorry. Only letters, underscore and dash can be used.')
+      .matches(/^[a-zA-Z _-]+$/,'Sorry. Only letters, underscore and dash can be used.')
       .required("Empty Name is Invalid"),
   });
 

@@ -51,13 +51,13 @@ export async function POST(request: NextRequest) {
       connect.commit();
       return NextResponse.json({
         status: 200,
-        statusText: "Location created successfully.",
+        statusText: "Department created successfully.",
       });
     } else {
       return NextResponse.json({
         status: 500,
         statusText:
-          "Something went wrong while adding location. Please try again.",
+          "Something went wrong while adding Department. Please try again.",
       });
     }
   } catch (error) {
