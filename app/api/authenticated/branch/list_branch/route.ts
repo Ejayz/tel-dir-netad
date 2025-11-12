@@ -1,6 +1,8 @@
 import { pool } from "@/libs/db";
 import { QueryResult, ResultSetHeader, RowDataPacket } from "mysql2";
 import { NextRequest, NextResponse } from "next/server";
+import jsonwebtoken from "jsonwebtoken";
+import { getpayloadValue } from "@/libs/Tools";
 
 interface Local extends RowDataPacket {
   branch_name: number;
@@ -12,6 +14,23 @@ interface Local extends RowDataPacket {
 export async function POST(req: NextRequest) {
   let { orderby, search, column_name, page } = await req.json();
 
+  let branch = '';
+  let query_branch='';
+  const token = req.cookies.get('token')?.value || "";
+      try {
+        if (token) {
+          const payload = await jsonwebtoken.decode(token);
+          branch = getpayloadValue(JSON.stringify(payload), 'branch_id')
+        }
+      }
+      catch (e) {
+        console.log(e);
+      }
+    
+      if (branch != '0'){
+        query_branch = 'AND tbl_branch.branch_id=' + branch +' '
+      }
+
   const connection = await pool.getConnection();
 
   try {
@@ -19,10 +38,10 @@ export async function POST(req: NextRequest) {
     let query;
 
     if (search || column_name) {
-      query = `SELECT * FROM tbl_branch WHERE is_exist=true AND branch_name LIKE ? AND branch_name != "No Branch" ORDER BY ${column_name} ${orderby} LIMIT ? , 10`;
+      query = `SELECT * FROM tbl_branch WHERE is_exist=true AND branch_name LIKE ? ${query_branch} ORDER BY ${column_name} ${orderby} LIMIT ? , 10`;
       // `SELECT * FROM tbl_local WHERE local LIKE ? AND is_exist=true ORDER BY ${local_name} ${orderby} LIMIT ? , 10`;
     } else {
-      query = `SELECT * FROM tbl_branch WHERE is_exist=true AND branch_name LIKE ? ORDER BY  ${column_name} ${orderby}  LIMIT ? , 10`;
+      query = `SELECT * FROM tbl_branch WHERE is_exist=true ${query_branch} ORDER BY  ${column_name} ${orderby}  LIMIT ? , 10`;
       // `SELECT * FROM tbl_local WHERE local LIKE ? AND is_exist=true ORDER BY  ${local_name} ${orderby}  LIMIT ? , 10`;
       orderby = "ASC";
       (search = ""), (column_name = "branch_id");

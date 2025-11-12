@@ -6,22 +6,22 @@ import { toast } from "react-toastify";
 import { Dispatch, useRef } from "react";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 export default function UpdateBranchModal({
-  data_id,
-  setId,
   FetchList,
+  branch_id,
+  branch_name,
 }: {
-  data_id: number | undefined;
-  setId: any;
   FetchList: any;
+  branch_id: number | undefined;
+  branch_name: string;
 }) {
-  const locationValidation = yup.object({
+  const branchValidation = yup.object({
     branch_name: yup.string().required("Branch Name is required."),
   });
 
-  const UpdateLocation = useRef<HTMLDialogElement>(null);
+  const UpdateBranch = useRef<HTMLDialogElement>(null);
 
   const { data, isFetching, isSuccess, isError } = useQuery({
-    queryKey: ["RetrieveLocation", data_id],
+    queryKey: ["RetrieveBranch", branch_id],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -30,7 +30,7 @@ export default function UpdateBranchModal({
       };
 
       let bodyContent = JSON.stringify({
-        location_id: data_id,
+        branch_id: branch_id,
       });
 
       let response = await fetch("/api/authenticated/branch/retrieve_branch", {
@@ -51,13 +51,13 @@ export default function UpdateBranchModal({
 
   return (
     <>
-      <dialog id="UpdateLocation" ref={UpdateLocation} className="modal">
+      <dialog id="UpdateBranch" ref={UpdateBranch} className="modal">
         <div className="modal-box">
           <h3 className="text-lg font-bold">Update Branch</h3>
 
           <Formik
             initialValues={{
-              branch_id: data_id,
+              branch_id: branch_id,
               branch_name: isError
                 ? ""
                 : isFetching
@@ -91,15 +91,14 @@ export default function UpdateBranchModal({
               let data = await response.json();
               if (data.status == 200) {
                 toast.success(data.statusText);
-                UpdateLocation.current?.close();
+                UpdateBranch.current?.close();
                 action.resetForm();
-                setId(null);
                 FetchList();
               } else {
                 action.setErrors({ branch_name: data.statusText });
               }
             }}
-            validationSchema={locationValidation}
+            validationSchema={branchValidation}
           >
             {({
               values,
@@ -152,7 +151,7 @@ export default function UpdateBranchModal({
                         resetForm();
                         (
                           document.getElementById(
-                            "UpdateLocation"
+                            "UpdateBranch"
                           ) as HTMLDialogElement
                         ).close();
                       }}

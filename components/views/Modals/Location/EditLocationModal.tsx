@@ -12,7 +12,21 @@ interface Select {
   placeholder:string
 }
 
-export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList: any , branch_data:{data:{branch_id:number, branch_name:string}[]} , Admin?:boolean}) {
+export function EditLocationModal({ 
+  FetchList,
+  location_id,
+  location_name, 
+  branch_id, 
+  branch_data, 
+  Admin 
+}: { 
+  FetchList: any , 
+  location_id:number, 
+  location_name: string, 
+  branch_id:number,
+  branch_data:{data:{branch_id:number, branch_name:string}[]}, 
+  Admin?:boolean
+}) { 
   const locationValidation = yup.object({
     location: yup.string().required(),
   });
@@ -24,17 +38,18 @@ export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList:
     b_array.push({id:branch_data.data[i].branch_id.toString(), placeholder:branch_data.data[i].branch_name});
     i++
   }
-  const AddLocation = useRef<HTMLDialogElement>(null);
+  const EditLocation = useRef<HTMLDialogElement>(null);
 
   return (
     <>
-      <dialog id="AddLocation" ref={AddLocation} className="modal">
+      <dialog id="EditLocation" ref={EditLocation} className="modal">
         <div className="modal-box">
-          <h3 className="text-lg font-bold">Add Location</h3>
+          <h3 className="text-lg font-bold">Edit Location</h3>
           <Formik
+           enableReinitialize={true}
             initialValues={{
-              location: "",
-              branch: "",
+              location: location_name || "",
+              branch: branch_id,
             }}
             onSubmit={async (values, action) => {
               let headersList = {
@@ -44,12 +59,13 @@ export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList:
               };
 
               let bodyContent = JSON.stringify({
-                location: values.location,
+                location_id: location_id,
+                location_name: values.location,
                 branch: values.branch,
               });
 
               let response = await fetch(
-                "/api/authenticated/location/add_location",
+                "/api/authenticated/location/edit_location",
                 {
                   method: "POST",
                   body: bodyContent,
@@ -61,7 +77,7 @@ export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList:
               console.log(data);
               if (data.status == 200) {
                 toast.success(data.statusText);
-                AddLocation.current?.close();
+                EditLocation.current?.close();
                 action.resetForm();
                 FetchList();
               } else {
@@ -110,7 +126,7 @@ export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList:
                         if(!isAdmin) return null;
                         ( 
                             document.getElementById(
-                              "AddBranch"
+                              "EditBranch"
                             ) as HTMLDialogElement
                           ).showModal();
                       }}
@@ -127,7 +143,7 @@ export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList:
                       } `}
                     >
                       {!isSubmitting ? (
-                        <>Add</>
+                        <>Edit</>
                       ) : (
                         <div className="loading-infinity loading loading-xl"></div>
                       )}
@@ -139,7 +155,7 @@ export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList:
                         resetForm();
                         (
                           document.getElementById(
-                            "AddLocation"
+                            "EditLocation"
                           ) as HTMLDialogElement
                         ).close();
                       }}

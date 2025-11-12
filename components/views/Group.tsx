@@ -132,7 +132,18 @@ export default function Group() {
           <kbd className="kbd kbd-sm">⌘</kbd>
           <kbd className="kbd kbd-sm">K</kbd>
         </label>
+         <button className="btn ml-10"
+          onClick={() => {
+            setGroupSort("");
+            setDepartmentSort("");
+            setDepartmentSort("");
+            setSearch("");
+          }
 
+          }
+        >
+          Reset Filter
+        </button>
         <div className="flex-5 flex flex-col items-end">
           <button
             onClick={() => {
