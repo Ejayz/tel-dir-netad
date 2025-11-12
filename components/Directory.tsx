@@ -41,6 +41,7 @@ export default function DirectorySearch() {
         body: bodyContent,
       });
       let data = await response.json();
+      console.log(data);
       return data;
     },
   });
@@ -250,6 +251,7 @@ export default function DirectorySearch() {
               </tr>
             ) : isFetching ? (
               <tr>
+                <td></td><td></td>
                 <td colSpan={3} className="font-xl text-center text-info">
                   Please wait while we load your data
                   <div className="loading loading-infinity "></div>

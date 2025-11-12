@@ -1,12 +1,14 @@
 import { Navigations } from "@/components/Navigations";
 import Local from "@/components/views/Local";
+import is_admin from "@/components/AdminStatus";
 
-export default function Home() {
+export default async function Home() {
   return (
     <>
       <main className="flex flex-col  items-center min-h-screen min-w-full sm:items-start">
         
-        <Navigations>
+        <Navigations
+         Admin={await is_admin()?true:false}>
           <Local />
         </Navigations>
         

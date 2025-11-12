@@ -4,18 +4,18 @@ import { Formik, Form } from "formik";
 import { toast } from "react-toastify";
 import { useRef } from "react";
 
-export function RemoveDepartmentModal({
-    FetchList, department_id, department_name }: {
-        FetchList: any, department_id: number, department_name?: string
+export function RemoveBranchModal({
+    FetchList, branch_id, branch_name }: {
+        FetchList: any, branch_id: number, branch_name?: string
     }) {
-    const RemoveDepartment = useRef<HTMLDialogElement>(null);
-     // console.log("RemoveDepartment Modal:",department_id,department_name);
+    const RemoveBranch = useRef<HTMLDialogElement>(null);
+     // console.log("RemoveBranch Modal:",branch_id,branch_name);
     return (
         <>
-            <dialog id="RemoveDepartment" ref={RemoveDepartment} className="modal">
+            <dialog id="RemoveBranch" ref={RemoveBranch} className="modal">
                 <div className="modal-box">
                     <h3 className="text-lg font-bold">Do you want to remove:</h3>
-                    <p className="py-4 font-semibold">{department_name}</p>
+                    <p className="py-4 font-semibold">{branch_name}</p>
                     <Formik
                         initialValues={{
                         }}
@@ -27,12 +27,12 @@ export function RemoveDepartmentModal({
                             };
 
                             let bodyContent = JSON.stringify({
-                                department_id: department_id,
-                                department_name: department_name,
+                                branch_id: branch_id,
+                                branch_name: branch_name,
                             });
 
                             let response = await fetch(
-                                "/api/authenticated/department/remove_department",
+                                "/api/authenticated/branch/remove_branch",
                                 {
                                     method: "POST",
                                     body: bodyContent,
@@ -44,12 +44,12 @@ export function RemoveDepartmentModal({
                             // console.log(data);
                             if (data.status == 200) {
                                 toast.success(data.statusText);
-                                RemoveDepartment.current?.close();
+                                RemoveBranch.current?.close();
                                 action.resetForm();
                                 FetchList();
                                 (
                                     document.getElementById(
-                                        "RemoveDepartment"
+                                        "RemoveBranch"
                                     ) as HTMLDialogElement
                                 ).close();
 
@@ -87,7 +87,7 @@ export function RemoveDepartmentModal({
                                                 resetForm();
                                                 (
                                                     document.getElementById(
-                                                        "RemoveDepartment"
+                                                        "RemoveBranch"
                                                     ) as HTMLDialogElement
                                                 ).close();
                                             }}

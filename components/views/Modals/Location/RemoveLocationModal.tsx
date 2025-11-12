@@ -4,18 +4,18 @@ import { Formik, Form } from "formik";
 import { toast } from "react-toastify";
 import { useRef } from "react";
 
-export function RemoveDepartmentModal({
-    FetchList, department_id, department_name }: {
-        FetchList: any, department_id: number, department_name?: string
+export function RemoveLocationModal({
+    FetchList, location_id, location_name }: {
+        FetchList: any, location_id: number, location_name?: string
     }) {
-    const RemoveDepartment = useRef<HTMLDialogElement>(null);
-     // console.log("RemoveDepartment Modal:",department_id,department_name);
+    const RemoveLocation = useRef<HTMLDialogElement>(null);
+     // console.log("RemoveLocation Modal:",location_id,location_name);
     return (
         <>
-            <dialog id="RemoveDepartment" ref={RemoveDepartment} className="modal">
+            <dialog id="RemoveLocation" ref={RemoveLocation} className="modal">
                 <div className="modal-box">
                     <h3 className="text-lg font-bold">Do you want to remove:</h3>
-                    <p className="py-4 font-semibold">{department_name}</p>
+                    <p className="py-4 font-semibold">{location_name + " ?"}</p>
                     <Formik
                         initialValues={{
                         }}
@@ -27,12 +27,11 @@ export function RemoveDepartmentModal({
                             };
 
                             let bodyContent = JSON.stringify({
-                                department_id: department_id,
-                                department_name: department_name,
+                                location_id: location_id
                             });
 
                             let response = await fetch(
-                                "/api/authenticated/department/remove_department",
+                                "/api/authenticated/location/remove_location",
                                 {
                                     method: "POST",
                                     body: bodyContent,
@@ -43,13 +42,14 @@ export function RemoveDepartmentModal({
                             let data = await response.json();
                             // console.log(data);
                             if (data.status == 200) {
+                                console.log("Triggerted"); //dafuq? naa man gud triggered na word.
                                 toast.success(data.statusText);
-                                RemoveDepartment.current?.close();
+                                RemoveLocation.current?.close();
                                 action.resetForm();
                                 FetchList();
                                 (
                                     document.getElementById(
-                                        "RemoveDepartment"
+                                        "RemoveLocation"
                                     ) as HTMLDialogElement
                                 ).close();
 
@@ -87,7 +87,7 @@ export function RemoveDepartmentModal({
                                                 resetForm();
                                                 (
                                                     document.getElementById(
-                                                        "RemoveDepartment"
+                                                        "RemoveLocation"
                                                     ) as HTMLDialogElement
                                                 ).close();
                                             }}

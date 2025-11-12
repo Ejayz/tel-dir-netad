@@ -1,12 +1,14 @@
 import { Navigations } from "@/components/Navigations";
 import Location from "@/components/views/Location";
+import is_admin from "@/components/AdminStatus";
 
-export default function Home() {
+export default async function Home() {
   return (
     <>
       <main className="flex flex-col  items-center min-h-screen min-w-full sm:items-start">
-        <Navigations>
-          <Location />
+        <Navigations
+         Admin={await is_admin()?true:false}>
+          <Location Admin={await is_admin()?true:false}/>
         </Navigations>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
