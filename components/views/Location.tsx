@@ -4,19 +4,24 @@ import { FaMapLocation, FaSortUp } from "react-icons/fa6";
 import { AddLocationModal } from "./Modals/Location/AddLocationModal";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FaSortDown } from "react-icons/fa";
+import { FaSortDown, FaSort } from "react-icons/fa";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
-import UpdateLocationModal from "./Modals/Location/UpdateLocationModal";
+import { EditLocationModal } from "./Modals/Location/EditLocationModal";
+import { RemoveLocationModal } from "./Modals/Location/RemoveLocationModal";
+import { AddBranchModal } from "./Modals/Branch/AddBranchModal";
 
-export default function Location() {
+export default function Location({Admin}:{Admin?:boolean}) {
   const [search, setSearch] = useState("");
-  const [column_name, setColumnName] = useState("location_id");
-  const [orderby, setOrderBy] = useState("ASC");
+  const [location_sort, setLocationSort] = useState("location_name ASC");
+  const [branch_sort, setBranchSort] = useState("");
   const [page, setPage] = useState(0);
-  const [location_id, setLocationId] = useState();
+  const [location_id, setLocationId] = useState(-1);
+  const [location_name, setLocationName] = useState("");
+  const [branch_id, setBranchId] = useState(0);
+  const [branch_data, setBranchData] = useState({data:[{branch_id:0,branch_name:"No Branch" }]});
 
   const { error, data, isFetching, isError, isSuccess ,refetch} = useQuery({
-    queryKey: ["List_Location", search, column_name, orderby, page],
+    queryKey: [search, location_sort, branch_sort,page],
     queryFn: async () => {
       console.log(page);
       let headersList = {
@@ -25,9 +30,9 @@ export default function Location() {
         "Content-Type": "application/json",
       };
       let bodyContent = JSON.stringify({
-        orderby: orderby,
         search: search,
-        column_name: column_name,
+        location_sort: location_sort,
+        branch_sort: branch_sort,
         page: page,
       });
 
@@ -38,22 +43,58 @@ export default function Location() {
       });
 
       let data = await response.json();
+      
       return data;
     },
   });
 
+  const { error:b_error, data:b_data, isFetching:b_isFetching, isError:b_isError, isSuccess:b_isSuccess ,refetch:b_refetch} = useQuery({
+    queryKey: [branch_data],
+    queryFn: async () => {
+      console.log(page);
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
+      let bodyContent = JSON.stringify({
+        orderby: "ASC",
+        search: search,
+        column_name: "branch_name",
+        page: page,
+      });
 
+      let response = await fetch("/api/authenticated/branch/list_branch", {
+        method: "POST",
+        headers: headersList,
+        body: bodyContent,
+      });
 
-
+      let data = await response.json();
+      setBranchData(data);
+      return data;
+    },
+  });
+  console.log(b_data);
 
   return (
     <div className="w-11/12 mx-auto">
-      <AddLocationModal FetchList={refetch} />
-      <UpdateLocationModal
+      <AddBranchModal FetchList={b_refetch}/>
+      <AddLocationModal 
+       FetchList={refetch}
+       branch_data={branch_data}
+       Admin = {Admin}/>
+      <EditLocationModal
         FetchList={refetch}
         location_id={location_id}
-        setLocationId={setLocationId}
-      />
+        location_name = {location_name}
+        branch_id={branch_id}
+       branch_data={branch_data}
+       Admin = {Admin}/>
+      <RemoveLocationModal
+        FetchList={refetch}
+        location_id={location_id}
+        location_name={location_name} />
       <div>
         <div className="breadcrumbs text-sm">
           <ul>
@@ -96,7 +137,16 @@ export default function Location() {
           <kbd className="kbd kbd-sm">⌘</kbd>
           <kbd className="kbd kbd-sm">K</kbd>
         </label>
+         <button className="btn ml-10"
+          onClick={() => {
+            setLocationSort("");
+            setSearch("");
+          }
 
+          }
+        >
+          Reset Filter
+        </button>
         <div className="flex-5 flex flex-col items-end">
           <button
             onClick={() => {
@@ -121,37 +171,61 @@ export default function Location() {
             <tr>
              <th>#</th>
 
-              {column_name == "location_name" ? (
-                <th
-                  className=" cursor-pointer"
-                  onClick={() => {
-                    setColumnName("location_name");
-                    if (orderby == "ASC") {
-                      setOrderBy("DESC");
-                    } else {
-                      setOrderBy("ASC");
-                    }
-                  }}
-                >
-                  <div className="flex flex-row justify-center">
-                    Location Name
-                    {orderby == "ASC" ? (
-                      <FaSortUp className="my-auto mx-2" />
-                    ) : (
-                      <FaSortDown className="my-auto mx-2" />
-                    )}
-                  </div>
-                </th>
-              ) : (
-                <th
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setColumnName("location_name");
-                  }}
-                >
-                  Location Name
-                </th>
-              )}
+              <th // Location
+                className=" cursor-pointer"
+                onClick={() => {
+                  switch (location_sort){
+                    case "":
+                      setLocationSort("location_name ASC");
+                      break;
+                    case "location_name ASC":
+                      setLocationSort("location_name DESC");
+                      break;
+                    case "location_name DESC":
+                      setLocationSort("");
+                      break;
+                  }
+                }}
+              >
+                <div className="flex flex-row justify-center">
+                  Location
+                  {location_sort == "" ? (
+                    <FaSort className="my-auto mx-2" />
+                  ) : location_sort == "location_name ASC" ? (
+                    <FaSortUp className="my-auto mx-2" />
+                  ) : (
+                    <FaSortDown className="my-auto mx-2" />
+                  )}
+                </div>
+              </th>
+              <th // Branch
+                className=" cursor-pointer"
+                onClick={() => {
+                  switch (branch_sort){
+                    case "":
+                      setBranchSort("branch_name ASC");
+                      break;
+                    case "branch_name ASC":
+                      setBranchSort("branch_name DESC");
+                      break;
+                    case "branch_name DESC":
+                      setBranchSort("");
+                      break;
+                  }
+                }}
+              >
+                <div className="flex flex-row justify-center">
+                  Branch
+                  {branch_sort == "" ? (
+                    <FaSort className="my-auto mx-2" />
+                  ) : branch_sort == "branch_name ASC" ? (
+                    <FaSortUp className="my-auto mx-2" />
+                  ) : (
+                    <FaSortDown className="my-auto mx-2" />
+                  )}
+                </div>
+              </th>
+              <th>Local Count</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -184,29 +258,39 @@ export default function Location() {
                 </td>
               ) : (
                 data.data?.map((location_data: any, index: number) => {
+                  if(index === 10) return; // limit to ten
                   return (
                     <tr key={index}>
                       <td>{(page*10)+index+1}</td>
                       <td>{location_data.location_name}</td>
+                      <td>{location_data.branch_name}</td>
+                      <td>{location_data.local_list.length}</td>
                       <td>
                         <div className="flex flex-row gap-3 justify-center">
                           <button
                             onClick={() => {
                               setLocationId(location_data.location_id);
-
+                              setLocationName(location_data.location_name);
+                              setBranchId(location_data.branch_id);
                               (
                                 document.getElementById(
-                                  "UpdateLocation"
+                                  "EditLocation"
                                 ) as HTMLDialogElement
                               ).showModal();
                             }}
                             className="btn btn-outline btn-sm rounded-md btn-accent"
                           >
                             <RiEdit2Fill />
-                            Update
+                            Edit
                           </button>
                           <button onClick={()=>{
-                              
+                              setLocationId(location_data.location_id);
+                              setLocationName(location_data.location_name);
+                              (
+                                document.getElementById(
+                                  "RemoveLocation"
+                                ) as HTMLDialogElement
+                              ).showModal();
                           }} className="btn btn-outline btn-sm rounded-md btn-error">
                             <RiDeleteBin2Fill />
                             Remove
@@ -248,7 +332,7 @@ export default function Location() {
                   ? ""
                   : data.status == 404
                   ? "btn-disabled"
-                  : data.data.length !== 10
+                  : data.data.length <= 10
                   ? "btn-disabled"
                   : ""
               }`}

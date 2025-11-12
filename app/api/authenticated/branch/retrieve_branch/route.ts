@@ -11,10 +11,10 @@ interface Location extends RowDataPacket {
 }
 
 export async function POST(req: NextRequest) {
-  const { location_id } = await req.json();
+  const { branch_id } = await req.json();
   const connection = await pool.getConnection();
 
-  if (!location_id) {
+  if (!branch_id) {
     return NextResponse.json(
       { status: 401, statusText: "Undefined id" },
       { status: 401, statusText: "Undefined id" }
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       "SELECT * FROM tbl_branch WHERE branch_id=? and is_exist=true";
 
     const [rows, fields] = await connection.execute<Location[]>(query, [
-      location_id,
+      branch_id,
     ]);
     if (rows.length == 0) {
       return NextResponse.json(

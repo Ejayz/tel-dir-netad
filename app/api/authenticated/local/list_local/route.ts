@@ -36,12 +36,9 @@ export async function POST(req: NextRequest) {
   let branch = '';
   const token = req.cookies.get('token')?.value || "";
   try {
-    // console.log(token);
-    // const decodedH = decodeJwt(token.value.toString()).payload;
     if (token) {
       const payload = await jsonwebtoken.decode(token);
       branch = getpayloadValue(JSON.stringify(payload), 'branch_id')
-      // console.log("list_local API:",branch);
     }
   }
   catch (e) {

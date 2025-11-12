@@ -17,8 +17,8 @@ export function AddGroupModal({
   department_list 
 }: { 
   FetchList: any ,
-  department_list:{data:{department_id:number , department_name: string}[]
-}}) {
+  department_list:{data:{department_id:number , department_name: string}[]}
+}) {
 
 let d_array:Select[] = [];
 
@@ -47,7 +47,6 @@ let d_array:Select[] = [];
                 department: "No Department",
               }}
               onSubmit={async (values, action) => {
-                console.log("API:Sending")
 
                 let headersList = {
                   Accept: "*/*",
@@ -70,7 +69,6 @@ let d_array:Select[] = [];
                 );
 
                 let data = await response.json();
-                console.log(data);
                 if (data.status == 200) {
                   toast.success(data.statusText);
                   Dialog.current?.close();
@@ -120,7 +118,6 @@ let d_array:Select[] = [];
                       <button
                       type="button"
                       onClick={()=>{
-                        console.log("Open add Dept.");
                         (
                             document.getElementById(
                               "AddDepartment"

@@ -5,10 +5,11 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FaSortDown } from "react-icons/fa";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
-import UpdateLocationModal from "./Modals/Location/UpdateLocationModal";
 import { AddBranchModal } from "./Modals/Branch/AddBranchModal";
 import UpdateBranchModal from "./Modals/Branch/UpdateBranchModal";
+import { RemoveBranchModal } from "./Modals/Branch/RemoveBranchModal";
 import { toast } from "react-toastify";
+import { ref } from "yup";
 
 export default function Branch() {
   const [search, setSearch] = useState("");
@@ -16,6 +17,8 @@ export default function Branch() {
   const [orderby, setOrderBy] = useState("ASC");
   const [page, setPage] = useState(0);
   const [id, setId] = useState();
+  const [branch_name, setBranchName] = useState("");
+  const [branch_id, setBranchId] = useState(0);
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
     queryKey: ["Branch_Group", search, column_name, orderby, page],
@@ -46,7 +49,11 @@ export default function Branch() {
   return (
     <div className="w-11/12 mx-auto">
       <AddBranchModal FetchList={refetch} />
-      <UpdateBranchModal FetchList={refetch} data_id={id} setId={setId} />
+      <UpdateBranchModal FetchList={refetch} branch_id={branch_id} branch_name={branch_name} /> 
+      <RemoveBranchModal 
+      FetchList={refetch}
+      branch_id={branch_id}
+      branch_name={branch_name}/>
       <div>
         <div className="text-sm breadcrumbs">
           <ul>
@@ -186,10 +193,11 @@ export default function Branch() {
                           <button
                             onClick={() => {
                               setId(data.branch_id);
-
+                              setBranchId(data.branch_id);
+                              setBranchName(data.branch_name);
                               (
                                 document.getElementById(
-                                  "UpdateLocation"
+                                  "UpdateBranch"
                                 ) as HTMLDialogElement
                               ).showModal();
                             }}
@@ -199,35 +207,14 @@ export default function Branch() {
                             Update
                           </button>
                           <button
-                            onClick={async () => {
-                              let headersList = {
-                                Accept: "*/*",
-                                "User-Agent":
-                                  "Thunder Client (https://www.thunderclient.com)",
-                                "Content-Type": "application/json",
-                              };
-
-                              let bodyContent = JSON.stringify({
-                                branch_id: data.branch_id,
-                              });
-
-                              let response = await fetch(
-                                "/api/authenticated/branch/remove_branch",
-                                {
-                                  method: "POST",
-                                  body: bodyContent,
-                                  headers: headersList,
-                                }
-                              );
-
-                              let resp = await response.json();
-
-                              if (resp.status == 200) {
-                                refetch();
-                                toast.success(resp.statusText);
-                              } else {
-                                toast.error(resp.statusText);
-                              }
+                            onClick={() => {
+                              setBranchId(data.branch_id);
+                              setBranchName(data.branch_name);
+                              (
+                                document.getElementById(
+                                  "RemoveBranch"
+                                ) as HTMLDialogElement
+                              ).showModal();
                             }}
                             className="rounded-md btn btn-outline btn-sm btn-error"
                           >
