@@ -13,7 +13,7 @@ interface Select {
 }
 
 
-export function AddLocalModal({
+export function EditLocalModal({
   FetchList,
   group_list,
   group_filter,
@@ -21,6 +21,12 @@ export function AddLocalModal({
   department_list,
   branch_list,
   location_list,
+  local,
+  department,
+  group,
+  branch,
+  location,
+
 }: {
   FetchList: any,
   group_list: { data: { group_id: number, group_name: string }[] },
@@ -29,6 +35,11 @@ export function AddLocalModal({
   department_list: { data: { department_id: number, department_name: string }[] },
   branch_list: {data:{branch_id: number, branch_name: string}[]},
   location_list: {data:{location_id:number, location_name: string}[]},
+  local:number,
+  department:{department_id:number, department_name:string},
+  group: {group_id:number, group_name:string},
+  branch: {branch_id:number, branch_name:string},
+  location: {location_id:number, location_name:string},
 }) {
   const Validation = yup.object({
       local: yup.string()
@@ -65,17 +76,17 @@ export function AddLocalModal({
   const Dialog = useRef<HTMLDialogElement>(null);
   return (
     <>
-      <dialog id="AddLocal" ref={Dialog} className="modal">
+      <dialog id="EditLocal" ref={Dialog} className="modal">
         <div className="modal-box">
-          <h3 className="text-lg font-bold">Add Local</h3>
+          <h3 className="text-lg font-bold">Edit Local</h3>
             <Formik
               enableReinitialize={true}
               initialValues={{
-                local:"",
-                department: "",
-                group: "",
-                branch:"",
-                location:"",
+                local:local.toString(),
+                department: department.department_id,
+                group: group.group_id,
+                branch:branch.branch_id,
+                location:location.location_id,
               }}
               onSubmit={async (values, action) => {
 
@@ -86,13 +97,14 @@ export function AddLocalModal({
                 };
 
                 let bodyContent = JSON.stringify({
-                  local: values.local,
+                  local_old: local,
+                  local_new: values.local,
                   group_id: values.group,
                   location_id:values.location,
                 });
 
                 let response = await fetch(
-                  "/api/authenticated/local/add_local",
+                  "/api/authenticated/local/edit_local",
                   {
                     method: "POST",
                     body: bodyContent,
@@ -220,12 +232,24 @@ export function AddLocalModal({
                     </div>
                   <div className="modal-action">
                     <button
+                      type="button"
+                      onClick={() => {
+                        resetForm();
+                        group_filter(department.department_id.toString());
+                        location_filter(branch.branch_id.toString());
+                      }}
+                      className="btn btn-primary rounded-md"
+                      id="Triggers"
+                    >
+                      Reset
+                    </button>
+                    <button
                       type="submit"
                       className={`btn btn-outline rounded-md ${!isSubmitting ? "btn-accent" : "btn-disabled"
                         } `}
                     >
                       {!isSubmitting ? (
-                        <>Add</>
+                        <>Done</>
                       ) : (
                         <div className="loading-infinity loading loading-xl"></div>
                       )}
@@ -239,7 +263,7 @@ export function AddLocalModal({
                         location_filter("");
                         (
                           document.getElementById(
-                            "AddLocal"
+                            "EditLocal"
                           ) as HTMLDialogElement
                         ).close();
                       }}

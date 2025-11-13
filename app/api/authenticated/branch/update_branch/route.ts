@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     connection.beginTransaction();
     const query =
-      "UPDATE tbl_branch SET branch_name=? WHERE branch_id=? AND is_exist=1";
+      "UPDATE tbl_branch SET branch_name=? updated_at = NOW() WHERE branch_id=? AND is_exist=1";
     const [rows, fields] = await connection.execute<ResultSetHeader>(query, [
       branch_name,
       branch_id,

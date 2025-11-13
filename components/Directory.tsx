@@ -1,8 +1,8 @@
 "use client";
-import { FaMapLocation, FaSortUp, FaSort } from "react-icons/fa6";
+import { FaMapLocation, FaArrowDown19, FaArrowDown91, FaArrowDownAZ, FaArrowDownZA, FaSort } from "react-icons/fa6";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { FaSortDown } from "react-icons/fa";
+
 
 
 
@@ -95,12 +95,12 @@ export default function DirectorySearch() {
       </div>
       <div className="divider"></div>
       <div className="overflow-x-auto mx-auto">
-        <table className="table table-zebra text-center text-foreground-content font-medium">
+        <table className="table table-zebra text-center text-foreground-content text-lg">
           {/* head */}
           <thead
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
-            <tr>
+            <tr className="text-lg">
               <th>ID</th>
               <th
                 className=" cursor-pointer"
@@ -123,9 +123,9 @@ export default function DirectorySearch() {
                   {local_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : local_sort == "local ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDown19 className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDown91 className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -151,9 +151,9 @@ export default function DirectorySearch() {
                   {group_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : group_sort == "group_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -178,9 +178,9 @@ export default function DirectorySearch() {
                   {department_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : department_sort == "department_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -205,9 +205,9 @@ export default function DirectorySearch() {
                   {location_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : location_sort == "location_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -232,9 +232,9 @@ export default function DirectorySearch() {
                   {branch_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : branch_sort == "branch_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>

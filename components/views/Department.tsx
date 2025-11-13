@@ -118,7 +118,7 @@ export default function Department() {
           <thead
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
-            <tr>
+            <tr className="text-lg">
               <th>#</th>
               <th // Department
                 className=" cursor-pointer w-1/3"

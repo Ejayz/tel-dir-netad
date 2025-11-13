@@ -113,13 +113,13 @@ export default function Branch() {
       </div>
       <div className="divider"></div>
       <div className="w-11/12 mx-auto overflow-x-auto">
-        <table className="table text-center table-zebra">
+        <table className="table text-center table-zebra text-lg">
           {/* head */}
           <thead
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
-            <tr>
-              <th>ID</th>
+            <tr className="text-lg">
+              <th>#</th>
 
               {column_name == "location_name" ? (
                 <th
@@ -134,7 +134,6 @@ export default function Branch() {
                   }}
                 >
                   <div className="flex flex-row justify-center">
-                    Group Name
                     {orderby == "ASC" ? (
                       <FaSortUp className="mx-2 my-auto" />
                     ) : (
@@ -149,9 +148,11 @@ export default function Branch() {
                     setColumnName("location_name");
                   }}
                 >
-                  Group Name
+                  Branch Name
                 </th>
               )}
+              <th>Locations</th>
+              <th>Locals</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -188,6 +189,8 @@ export default function Branch() {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td>{data.branch_name}</td>
+                      <td></td>
+                      <td></td>
                       <td>
                         <div className="flex flex-row justify-center gap-3">
                           <button
