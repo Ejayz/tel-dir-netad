@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FaRegUserCircle } from "react-icons/fa";
 import { Bounce, ToastContainer } from "react-toastify";
 import ThemeToggle from "./ThemeToggle";
+import Cookies from "js-cookie";  
+import Link from "next/link";
 
 export function Navigations({
   children,
@@ -107,7 +109,7 @@ export function Navigations({
                     <a>Settings</a>
                   </li>
                   <li>
-                    <a>Logout</a>
+                    <a href="/" onClick={()=>{Cookies.remove("token")}}>Logout</a>
                   </li>
                 </ul>
               </div>
@@ -200,7 +202,7 @@ export function Navigations({
                   <a>Settings</a>
                 </li>
                 <li>
-                  <a>Logout</a>
+                  <a href="/" onClick={()=>{Cookies.remove("token")}}>Logout</a>
                 </li>
               </ul>
             </div>
