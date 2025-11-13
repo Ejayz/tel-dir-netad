@@ -10,10 +10,14 @@ interface Local extends RowDataPacket {
   created_at: string;
   updated_at: string;
   is_exist: boolean;
-  group: string;
-  department: string;
-  location: string;
-  branch: string;
+  group_name: string;
+  department_name: string;
+  location_name: string;
+  branch_name: string;
+  group_id:number;
+  location_id:number;
+  department_id: number;
+  branch_id:number;
 }
 
 export async function POST(req: NextRequest) {
@@ -75,7 +79,7 @@ export async function POST(req: NextRequest) {
       ];
     } else {
       query =
-        `SELECT tbl_local.local, tbl_group.group_name , tbl_department.department_name, tbl_location.location_name, tbl_branch.branch_name
+        `SELECT tbl_local.local, tbl_group.group_id ,tbl_group.group_name , tbl_department.department_id,tbl_department.department_name, tbl_location.location_id, tbl_location.location_name, tbl_branch.branch_id, tbl_branch.branch_name
         FROM tbl_local 
         LEFT JOIN tbl_group ON tbl_local.group_id=tbl_group.group_id 
         LEFT JOIN tbl_department ON tbl_group.department_id=tbl_department.department_id 
@@ -88,7 +92,7 @@ export async function POST(req: NextRequest) {
 
 
 
-    console.log("list_directory API: ", query);
+    // console.log("list_local API: ", query);
 
     // console.log(offset_item);
     //Executuion of Query

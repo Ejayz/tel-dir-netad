@@ -1,6 +1,6 @@
 "use client";
 
-import { FaPlus, FaSortUp, FaSortDown, FaSort  } from "react-icons/fa6";
+import { FaPlus, FaArrowDownAZ, FaArrowDownZA, FaSort  } from "react-icons/fa6";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
@@ -8,7 +8,6 @@ import { AddGroupModal } from "./Modals/Group/AddGroupModal";
 import { EditGroupModal } from "./Modals/Group/EditGroup";
 import { RemoveGroupModal } from "./Modals/Group/RemoveGroup";
 import { AddDepartmentModal } from "./Modals/Department/AddDepartmentModal";
-import { group } from "console";
 
 export default function Group() {
   const [search, setSearch] = useState("");
@@ -19,7 +18,7 @@ export default function Group() {
   const [department_sort, setDepartmentSort] = useState("")
   const [department_name, setDepartmentName]= useState("");
   const [department_id, setDepartmentId] = useState(-1);
- const [department_list, setDepartmentList] = useState({data:[{department_id : 0, department_name : "test"}]})
+  const [department_list, setDepartmentList] = useState({data:[{department_id : 0, department_name : ""}]})
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
     queryKey: [search, group_name, group_sort, department_sort, page],
@@ -63,7 +62,6 @@ export default function Group() {
         body: bodyContent,
       });
       let data = await response.json();
-      console.log("Fetch Dept. List");
       setDepartmentList(data);
       return data;
       }
@@ -164,9 +162,9 @@ export default function Group() {
         <table className="table table-zebra text-center text-lg">
           {/* head */}
           <thead
-            className={`${isFetching ? "invisible" : "table-header-group"}`}
+            className={`${isFetching ? "invisible" : "table-header-group"} text-lg`}
           >
-            <tr>
+            <tr className="">
               <th>ID</th>
 
               <th // Group
@@ -190,9 +188,9 @@ export default function Group() {
                   {group_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : group_sort == "group_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -217,9 +215,9 @@ export default function Group() {
                   {department_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : department_sort == "department_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>

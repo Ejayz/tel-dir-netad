@@ -75,7 +75,6 @@ export default function Location({Admin}:{Admin?:boolean}) {
       return data;
     },
   });
-  console.log(b_data);
 
   return (
     <div className="w-11/12 mx-auto">
@@ -163,12 +162,12 @@ export default function Location({Admin}:{Admin?:boolean}) {
       </div>
       <div className="divider"></div>
       <div className="overflow-x-auto w-11/12 mx-auto">
-        <table className="table table-zebra text-center">
+        <table className="table table-zebra text-center text-lg">
           {/* head */}
           <thead
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
-            <tr>
+            <tr className="text-lg">
              <th>#</th>
 
               <th // Location

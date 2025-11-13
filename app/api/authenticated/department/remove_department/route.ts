@@ -11,7 +11,6 @@ interface Group extends RowDataPacket{
 export async function POST(request: NextRequest) {
   const { department_id,department_name } = await request.json();
   const connect = await pool.getConnection();
-  console.log("remove_department API:",department_id,department_name);
 
   try {
     await connect.beginTransaction();

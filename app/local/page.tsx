@@ -9,7 +9,7 @@ export default async function Home() {
         
         <Navigations
          Admin={await is_admin()?true:false}>
-          <Local />
+          <Local Admin={await is_admin()?true:false}/>
         </Navigations>
         
       </main>
