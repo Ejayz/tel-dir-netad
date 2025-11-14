@@ -1,6 +1,6 @@
 import { Navigations } from "@/components/Navigations";
 import Group from "@/components/views/Group";
-import is_admin from "@/components/AdminStatus";
+import {is_admin} from "@/components/TokenCheck";
 
 export default async function Home() {
   return (

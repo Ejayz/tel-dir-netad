@@ -1,6 +1,6 @@
 import { Navigations } from "@/components/Navigations";
 import Local from "@/components/views/Local";
-import is_admin from "@/components/AdminStatus";
+import {is_admin} from "@/components/TokenCheck";
 
 export default async function Home() {
   return (
@@ -9,7 +9,7 @@ export default async function Home() {
         
         <Navigations
          Admin={await is_admin()?true:false}>
-          <Local />
+          <Local Admin={await is_admin()?true:false}/>
         </Navigations>
         
       </main>

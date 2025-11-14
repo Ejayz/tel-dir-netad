@@ -3,26 +3,49 @@ import { BsFillTelephoneOutboundFill } from "react-icons/bs";
 import { AddLocalModal } from "./Modals/Local/AddLocalModal";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { FaSortUp ,FaSortDown, FaSort} from "react-icons/fa6";
+import {  FaSort, FaArrowDownAZ, FaArrowDownZA, FaArrowDown19, FaArrowDown91} from "react-icons/fa6";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
+import { RemoveLocalModal } from "./Modals/Local/RemoveLocal";
+import { AddGroupModal } from "./Modals/Group/AddGroupModal";
+import { AddDepartmentModal } from "./Modals/Department/AddDepartmentModal";
+import { AddBranchModal } from "./Modals/Branch/AddBranchModal"; 
+import { AddLocationModal } from "./Modals/Location/AddLocationModal";
+import { EditLocalModal } from "./Modals/Local/EditLocalModal";
 
 
-
-export default function Local() {
+export default function Local({Admin}:{Admin?:Boolean}) {
   const [search, setSearch] = useState("");
   const [local_sort, setLocalSort] = useState("local ASC");
   const [group_sort, setGroupSort] = useState("");
   const [department_sort, setDepartmentSort] = useState("");
   const [location_sort, setLocationSort] = useState("");
   const [branch_sort, setBranchSort] = useState("");
-  // const [orderby, setOrderBy] = useState("ASC");
   const [page, setPage] = useState(0);
+  const [local, setLocal] = useState(0);
+  const [department, setDepartment] = useState({department_id:0, department_name:""});
+  const [group, setGroup] = useState({group_id: 0, group_name: ""})
+  const [branch, setBranch] = useState({branch_id: 0, branch_name: ""})
+  const [location, setLocation] = useState({location_id:0, location_name:""});
+  const [location_filter, setlocationFilter] = useState("");
+  const [group_filter, setGroupFilter] = useState("");
+  const [group_list, setGroupList] = useState({data:[{group_id:0,group_name:""}]});
+  const [department_list, setDepartmentList] = useState({data:[{department_id: 0 , department_name: ""}]});
+  const [branch_list, setBranchList] = useState({data:[{branch_id:0, branch_name: ""}]});
+  const [location_list, setLocationList] = useState({data:[{location_id:0,location_name:""}]});
+  //UDF
+  const changeGroup = (value:string) =>{
+    setGroupFilter(value);
+    g_refetch;
+  }
+  const changeLocation = (value:string) =>{
+    setlocationFilter(value);
+    l_refetch;
+  }
 
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
     queryKey: [search, local_sort, group_sort, department_sort, location_sort, branch_sort, page],
     queryFn: async () => {
-      // console.log(page);
       let headersList = {
         Accept: "*/*",
         "User-Agent": "Thunder Client (https://www.thunderclient.com)",
@@ -43,9 +66,108 @@ export default function Local() {
         headers: headersList,
         body: bodyContent,
       });
-      // console.log(response);
       let data = await response.json();
-      console.log(data);
+      return data;
+    },
+  });
+  const { error:d_error, data:d_data, isFetching:d_isFetching, isError:d_isError, isSuccess:d_isSuccess, refetch:d_refetch } = useQuery({
+    queryKey: [department_list],
+    queryFn: async () => {
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
+      let bodyContent = JSON.stringify({
+        search: search,
+        local_sort: local_sort,
+        group_sort: group_sort,
+        department_sort: department_sort,
+        location_sort: location_sort,
+        branch_sort: branch_sort,
+        page: page,
+      });
+
+      let response = await fetch("/api/authenticated/department/list_department_only", {
+        method: "POST",
+        headers: headersList,
+        body: bodyContent,
+      });
+
+      let data = await response.json();
+      setDepartmentList(data);
+      return data;
+    },
+  });
+  const { error:g_error, data:g_data, isFetching:g_isFetching, isError:g_isError, isSuccess:g_isSuccess, refetch:g_refetch } = useQuery({
+    queryKey: [group_list,group_filter],
+    queryFn: async () => {
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
+      let bodyContent = JSON.stringify({
+        department_id:group_filter
+      });
+
+      let response = await fetch("/api/authenticated/group/list_group_only", {
+        method: "POST",
+        headers: headersList,
+        body: bodyContent,
+      });
+      
+      let data = await response.json();
+      setGroupList(data);
+      return data;
+    },
+  });
+  const { error:b_error, data:b_data, isFetching:b_isFetching, isError:b_isError, isSuccess:b_isSuccess ,refetch:b_refetch} = useQuery({
+    queryKey: [branch_list],
+    queryFn: async () => {
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
+      let bodyContent = JSON.stringify({
+        orderby: "ASC",
+        search: search,
+        column_name: "branch_name",
+        page: page,
+      });
+
+      let response = await fetch("/api/authenticated/branch/list_branch", {
+        method: "POST",
+        headers: headersList,
+        body: bodyContent,
+      });
+
+      let data = await response.json();
+      setBranchList(data);
+      return data;
+    },
+  });
+  const { error:l_error, data:l_data, isFetching:l_isFetching, isError:l_isError, isSuccess:l_isSuccess, refetch:l_refetch } = useQuery({
+    queryKey: [location_list,location_filter],
+    queryFn: async () => {
+      let headersList = {
+        Accept: "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/json",
+      };
+      let bodyContent = JSON.stringify({
+        branch_id:location_filter
+      });
+
+      let response = await fetch("/api/authenticated/location/list_location_only", {
+        method: "POST",
+        headers: headersList,
+        body: bodyContent,
+      });
+      
+      let data = await response.json();
+      setLocationList(data);
       return data;
     },
   });
@@ -53,7 +175,46 @@ export default function Local() {
 
   return (
     <div className="w-11/12 mx-auto">
-      <AddLocalModal></AddLocalModal>
+      <AddBranchModal
+      FetchList={b_refetch}
+      />
+      <AddLocationModal 
+      FetchList={l_refetch}
+      branch_data={branch_list}
+      Admin={Admin?true:false}/>
+      <AddDepartmentModal 
+      FetchList={d_refetch}/>
+      <AddGroupModal
+      FetchList={g_refetch}
+      department_list={department_list}/>
+      <AddLocalModal 
+      FetchList={refetch}
+      group_list={group_list}
+      group_filter={changeGroup}
+      location_filter={changeLocation}
+      department_list={department_list}
+      branch_list={branch_list}
+      location_list={location_list}
+      />
+      <EditLocalModal
+      FetchList={refetch}
+      group_list={group_list}
+      group_filter={changeGroup}
+      location_filter={changeLocation}
+      department_list={department_list}
+      branch_list={branch_list}
+      location_list={location_list}
+      local={local}
+      department={department}
+      branch={branch}
+      group={group}
+      location={location}
+      />
+      <RemoveLocalModal
+      FetchList = {refetch}
+      local = {local}
+      />
+
 
       <div>
         <div className="breadcrumbs text-sm">
@@ -99,7 +260,7 @@ export default function Local() {
         </label>
         <button className="btn ml-10"
           onClick={() => {
-            setLocalSort("");
+            setLocalSort("local ASC");
             setGroupSort("");
             setDepartmentSort("");
             setLocationSort("");
@@ -113,21 +274,23 @@ export default function Local() {
         </button>
 
         <div className="flex-5 flex flex-col items-end">
-          <label
-            htmlFor="my_modal_6"
+          <button
+          type="button"
+          onClick={() => {
+              (
+                document.getElementById("AddLocal") as HTMLDialogElement
+              ).showModal();
+            }}
             className="btn items rounded-md btn-outline btn-primary"
-          >
-            <BsFillTelephoneOutboundFill className="" />
-            New Local
-          </label>
+            ><BsFillTelephoneOutboundFill className="" /> Add Local </button>
         </div>
       </div>
       <div className="divider"></div>
       <div className="overflow-x-auto w-11/12 mx-auto">
-        <table className="table table-zebra text-center">
+        <table className="table table-zebra text-center text-lg">
           {/* head */}
           <thead
-            className={`${isFetching ? "invisible" : "table-header-group"}`}
+            className={`${isFetching ? "invisible" : "table-header-group"} text-lg`}
           >
             <tr>
               <th>#</th>
@@ -152,9 +315,9 @@ export default function Local() {
                   {local_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : local_sort == "local ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDown19 className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDown91 className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -180,9 +343,9 @@ export default function Local() {
                   {group_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : group_sort == "group_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -207,9 +370,9 @@ export default function Local() {
                   {department_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : department_sort == "department_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -234,9 +397,9 @@ export default function Local() {
                   {location_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : location_sort == "location_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -261,9 +424,9 @@ export default function Local() {
                   {branch_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
                   ) : branch_sort == "branch_name ASC" ? (
-                    <FaSortUp className="my-auto mx-2" />
+                    <FaArrowDownAZ className="my-auto mx-2" />
                   ) : (
-                    <FaSortDown className="my-auto mx-2" />
+                    <FaArrowDownZA className="my-auto mx-2" />
                   )}
                 </div>
               </th>
@@ -281,6 +444,9 @@ export default function Local() {
               </tr>
             ) : isFetching ? (
               <tr>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td colSpan={3} className="font-xl text-center text-info">
                   Please wait while we load your data
                   <div className="loading loading-infinity "></div>
@@ -312,15 +478,32 @@ export default function Local() {
                         <div className="flex flex-row gap-3 justify-center">
                           <button
                             onClick={() => {
-                            
+                              setDepartment({department_id:parseInt(local_data.department_id),department_name:local_data.department_name});
+                              setBranch({branch_id:parseInt(local_data.branch_id),branch_name:local_data.branch_name});
+                              setGroup({group_id:parseInt(local_data.group_id),group_name:local_data.group_name});
+                              setLocation({location_id:parseInt(local_data.location_id), location_name:local_data.location_name});
+                              setLocal(local_data.local);
+                              setGroupFilter(local_data.department_id);
+                              setlocationFilter(local_data.branch_id);
+                              (
+                              document.getElementById(
+                                  "EditLocal"
+                                ) as HTMLDialogElement
+                            ).showModal();
+
                             }}
                             className="btn btn-outline btn-sm rounded-md btn-accent"
                           >
                             <RiEdit2Fill />
-                            Update
+                            Edit
                           </button>
                           <button onClick={() => {
-
+                            setLocal(local_data.local);
+                            (
+                              document.getElementById(
+                                  "RemoveLocal"
+                                ) as HTMLDialogElement
+                            ).showModal();
                           }} className="btn btn-outline btn-sm rounded-md btn-error">
                             <RiDeleteBin2Fill />
                             Remove

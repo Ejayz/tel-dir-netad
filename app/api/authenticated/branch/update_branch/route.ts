@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     connection.beginTransaction();
     const query =
-      "UPDATE tbl_branch SET branch_name=? WHERE branch_id=? AND is_exist=1";
+      "UPDATE tbl_branch SET branch_name=?, updated_at = NOW() WHERE branch_id=? AND is_exist=true;";
     const [rows, fields] = await connection.execute<ResultSetHeader>(query, [
       branch_name,
       branch_id,
@@ -16,21 +16,22 @@ export async function POST(req: NextRequest) {
     if (rows.affectedRows === 1) {
       connection.commit();
       return NextResponse.json(
-        { status: 200, statusText: "Successfully updated branch name." },
         { status: 200, statusText: "Successfully updated branch name." }
+
       );
     } else {
       connection.rollback();
       NextResponse.json(
-        { status: 500, statusText: "Something went wrong. Please try again." },
         { status: 500, statusText: "Something went wrong. Please try again." }
+
       );
     }
   } catch (e) {
     connection.rollback();
+    console.log(e)
     return NextResponse.json(
-      { status: 500, statusText: "Something went wrong . Please try again." },
       { status: 500, statusText: "Something went wrong . Please try again." }
+
     );
   } finally {
     pool.releaseConnection(connection);

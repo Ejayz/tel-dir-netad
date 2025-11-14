@@ -19,23 +19,22 @@ export async function POST(request: NextRequest) {
 
   try {
     await connect.beginTransaction();
-    // const test_query = 
-    // `SELECT *
-    // FROM tbl_group
-    // WHERE group_name=? AND is_exist = true;
-    // `;
-
-    // const [test_rows, test_fields] = await connect.execute<Group[]>(test_query, [
-    //   group_name,
-    // ]);
-    // if (test_rows.length > 0) {
-    //   return NextResponse.json({
-    //     status: 501,
-    //     statusText:
-    //       "group already exists. Please try again.",
-    //   });
-    // }
+    const test_query = 
+    `SELECT *
+    FROM tbl_group
+    WHERE group_name=? AND department_id = ? AND is_exist = true;
+    `;
     const q_departmentId = department_id.toString();
+    const [test_rows, test_fields] = await connect.execute<Group[]>(test_query, [
+      group_name,
+      q_departmentId
+    ]);
+    if (test_rows.length > 0) {
+      return NextResponse.json({
+        status: 501,
+        statusText:"Group already exists in that Department. Please try again.",
+      });
+    }
     
 
     const query = 

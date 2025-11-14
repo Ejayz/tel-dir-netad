@@ -38,11 +38,9 @@ export async function POST(req: NextRequest) {
     let query;
 
     if (search || column_name) {
-      query = `SELECT * FROM tbl_branch WHERE is_exist=true AND branch_name LIKE ? ${query_branch} ORDER BY ${column_name} ${orderby} LIMIT ? , 10`;
-      // `SELECT * FROM tbl_local WHERE local LIKE ? AND is_exist=true ORDER BY ${local_name} ${orderby} LIMIT ? , 10`;
+      query = `SELECT * FROM tbl_branch WHERE is_exist=true AND branch_name LIKE ? ${query_branch} ORDER BY ${column_name} ${orderby} LIMIT ? , 10;`;
     } else {
-      query = `SELECT * FROM tbl_branch WHERE is_exist=true ${query_branch} ORDER BY  ${column_name} ${orderby}  LIMIT ? , 10`;
-      // `SELECT * FROM tbl_local WHERE local LIKE ? AND is_exist=true ORDER BY  ${local_name} ${orderby}  LIMIT ? , 10`;
+      query = `SELECT * FROM tbl_branch WHERE is_exist=true ${query_branch} ORDER BY  ${column_name} ${orderby}  LIMIT ? , 10;`;
       orderby = "ASC";
       (search = ""), (column_name = "branch_id");
       page = 0;

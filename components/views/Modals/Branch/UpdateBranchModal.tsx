@@ -20,34 +20,6 @@ export default function UpdateBranchModal({
 
   const UpdateBranch = useRef<HTMLDialogElement>(null);
 
-  const { data, isFetching, isSuccess, isError } = useQuery({
-    queryKey: ["RetrieveBranch", branch_id],
-    queryFn: async () => {
-      let headersList = {
-        Accept: "*/*",
-        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-        "Content-Type": "application/json",
-      };
-
-      let bodyContent = JSON.stringify({
-        branch_id: branch_id,
-      });
-
-      let response = await fetch("/api/authenticated/branch/retrieve_branch", {
-        method: "POST",
-        body: bodyContent,
-        headers: headersList,
-      });
-
-      let data = await response.json();
-
-      if (data.status !== 200) {
-        return Promise.resolve({ data });
-      } else {
-        return data;
-      }
-    },
-  });
 
   return (
     <>
@@ -57,14 +29,7 @@ export default function UpdateBranchModal({
 
           <Formik
             initialValues={{
-              branch_id: branch_id,
-              branch_name: isError
-                ? ""
-                : isFetching
-                ? ""
-                : data.status == 200
-                ? data.data[0].branch_name
-                : "",
+              branch_name: branch_name
             }}
             enableReinitialize
             onSubmit={async (values, action) => {
@@ -75,7 +40,7 @@ export default function UpdateBranchModal({
               };
 
               let bodyContent = JSON.stringify({
-                branch_id: values.branch_id,
+                branch_id: branch_id,
                 branch_name: values.branch_name,
               });
 
@@ -111,16 +76,7 @@ export default function UpdateBranchModal({
             }) => (
               <Form className="card-body">
                 <fieldset className="fieldset">
-                  {isError ? (
-                    <></>
-                  ) : isFetching ? (
-                    <div className="flex flex-col ">
-                      <div className="mx-auto loading-infinity loading text-accent"></div>
-                      <p className="mx-auto">
-                        Please wait while we retrieve relevant data
-                      </p>
-                    </div>
-                  ) : (
+                  
                     <TextInput
                       handleChange={handleChange}
                       label="Branch Name"
@@ -130,7 +86,7 @@ export default function UpdateBranchModal({
                       placeholder="Branch Name"
                       touched={touched.branch_name}
                     ></TextInput>
-                  )}
+                  
 
                   <div className="modal-action">
                     <button
