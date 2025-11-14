@@ -20,16 +20,20 @@ export function Navigations({
 
   
   return (
-    <div className="drawer">
+    <div className="drawer drawer-end">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="flex flex-col drawer-content">
         {/* Navbar */}
         <div className="w-full navbar bg-base-300">
-          <div className="flex-none lg:hidden">
+          
+          <div className="flex-1 px-2 mx-2 font-mono font-bold uppercase">
+            Telephone Directory Management
+          </div>
+          <div className="flex-none lg:hidden self-end">
             <label
               htmlFor="my-drawer-3"
               aria-label="open sidebar"
-              className="btn btn-square btn-ghost"
+              className="btn btn-square btn-ghost "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -45,9 +49,6 @@ export function Navigations({
                 ></path>
               </svg>
             </label>
-          </div>
-          <div className="flex-1 px-2 mx-2 font-mono font-bold uppercase">
-            Telephone Directory Management
           </div>
           <div className="flex-none hidden lg:block">
             <ThemeToggle />
@@ -79,7 +80,7 @@ export function Navigations({
                 </details>
               </li>
               <li hidden={!Admin}>
-                <a>Users</a>
+                <a href="/users">Users</a>
               </li>
               <li>
                 <a>Account</a>

@@ -60,7 +60,12 @@ export const getpayloadValue = (
     // console.log(row,'--->',typeof row);
     if (row.includes(name)){
       value = row.slice(row.indexOf(':')+1, row.length).trim();
-      // console.log('tools:', value);
+      if(value.charAt(0) === '"')
+      {
+        value = value.slice(1,value.length-1);
+        console.log('tools:', value);
+      }
+      
     }
   }
   return value;
