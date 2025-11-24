@@ -8,8 +8,6 @@ import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
 import { AddBranchModal } from "./Modals/Branch/AddBranchModal";
 import UpdateBranchModal from "./Modals/Branch/UpdateBranchModal";
 import { RemoveBranchModal } from "./Modals/Branch/RemoveBranchModal";
-import { toast } from "react-toastify";
-import { ref } from "yup";
 
 export default function Branch() {
   const [search, setSearch] = useState("");
@@ -21,7 +19,7 @@ export default function Branch() {
   const [branch_id, setBranchId] = useState(0);
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: ["Branch_Group", search, column_name, orderby, page],
+    queryKey: ["Branch_Group", search, column_name, orderby, page,  id, branch_id],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -32,7 +30,7 @@ export default function Branch() {
         orderby: orderby,
         search: search,
         column_name: column_name,
-        page: page,
+        page: page
       });
 
       let response = await fetch("/api/authenticated/branch/list_branch", {
@@ -113,19 +111,19 @@ export default function Branch() {
       </div>
       <div className="divider"></div>
       <div className="w-11/12 mx-auto overflow-x-auto">
-        <table className="table text-center table-zebra">
+        <table className="table text-center table-zebra text-lg">
           {/* head */}
           <thead
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
-            <tr>
-              <th>ID</th>
+            <tr className="text-lg">
+              <th>#</th>
 
-              {column_name == "location_name" ? (
+              {column_name == "branch_name" ? (
                 <th
                   className="cursor-pointer "
                   onClick={() => {
-                    setColumnName("location_name");
+                    setColumnName("branch_name");
                     if (orderby == "ASC") {
                       setOrderBy("DESC");
                     } else {
@@ -134,7 +132,7 @@ export default function Branch() {
                   }}
                 >
                   <div className="flex flex-row justify-center">
-                    Group Name
+                    Branch Name
                     {orderby == "ASC" ? (
                       <FaSortUp className="mx-2 my-auto" />
                     ) : (
@@ -146,12 +144,14 @@ export default function Branch() {
                 <th
                   className="cursor-pointer"
                   onClick={() => {
-                    setColumnName("location_name");
+                    setColumnName("branch_name");
                   }}
-                >
-                  Group Name
+                >Branch Name
+                  
                 </th>
               )}
+              <th>Locations</th>
+              <th>Locals</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -188,6 +188,8 @@ export default function Branch() {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td>{data.branch_name}</td>
+                      <td></td>
+                      <td></td>
                       <td>
                         <div className="flex flex-row justify-center gap-3">
                           <button

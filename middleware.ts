@@ -57,7 +57,13 @@ export async function middleware(request: NextRequest) {
   }
   if (
     request.nextUrl.pathname.startsWith("/api") ||
-    request.nextUrl.pathname.startsWith("/dashboard")
+    request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/user") ||
+    request.nextUrl.pathname.startsWith("/location") ||
+    request.nextUrl.pathname.startsWith("/branch") ||
+    request.nextUrl.pathname.startsWith("/group") ||
+    request.nextUrl.pathname.startsWith("/local") ||
+    request.nextUrl.pathname.startsWith("/department")
   ) {
     if (request.cookies.get("token")?.value) {
       const token = request.cookies.get("token")?.value || "";
@@ -65,7 +71,7 @@ export async function middleware(request: NextRequest) {
         const verify = await jose.jwtVerify(
           token,
           new TextEncoder().encode(jwtSecret)
-        );
+        )
         if (!verify.payload) {
           return NextResponse.redirect(new URL("/", request.url));
         }

@@ -11,7 +11,7 @@ interface Location extends RowDataPacket{
 }
 
 export async function POST(request: NextRequest) {
-  const { local, group_id, location_id } = await request.json();
+  const { local_old,local_new, group_id, location_id } = await request.json();
   const connect = await pool.getConnection();
   await connect.beginTransaction();
   let q_value = [""]
@@ -19,14 +19,7 @@ export async function POST(request: NextRequest) {
   try{
     let g_id = group_id;
     let l_id = location_id;
-    const test_query = `SELECT local FROM tbl_local WHERE local = ?;`;
-    const [rows] = await connect.execute<RowDataPacket[]>(test_query,[local]);
-    if(rows.length>0){
-      return NextResponse.json({
-        status:500,
-        statusText: "Local Already exist."
-      });
-    }
+
     let loopCount = 0;
     while(!g_id || g_id=="No Group"){
       const get_query = 'SELECT group_id FROM tbl_group WHERE group_name = "No Group";'
@@ -69,7 +62,7 @@ export async function POST(request: NextRequest) {
         loopCount++;
       }
     }
-    q_value = [local,g_id,l_id]
+    q_value = [local_new,g_id,l_id,local_old]
   }catch(e){
     console.log(e);
     return NextResponse.json({
@@ -83,9 +76,9 @@ export async function POST(request: NextRequest) {
   try {
     
     const query = `
-    INSERT INTO tbl_local 
-    (local,group_id,location_id,created_at,updated_at, is_exist) 
-    VALUES (?,?,?,NOW(),NOW(),true);`;
+    UPDATE tbl_local
+    SET local = ? , group_id = ?, location_id = ?
+    WHERE local=?`;
 
     const [rows, fields] = await connect.execute<ResultSetHeader>(query,q_value);
     if (rows.affectedRows == 1) {

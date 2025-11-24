@@ -1,18 +1,18 @@
 import { pool } from "@/libs/db";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { NextRequest, NextResponse } from "next/server";
+import * as bcrypt from "bcrypt";
 
 interface Branch extends RowDataPacket{
-  branch_id:number;
+    branch_id:number
 }
-interface Test extends RowDataPacket{
-  location_name:string;
-  branch_name:string;
-}
+
 export async function POST(request: NextRequest) {
-  const { location, branch } = await request.json();
+  const { username, email, password, first_name, middle_name, last_name, branch } = await request.json();
   const connect = await pool.getConnection();
   await connect.beginTransaction();
+  let hash_password = await bcrypt.hash(password,11);
+  
   let branch_id = '0';
   if(!branch || branch == "No Branch"){
     try{
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       else if(b_rows.length == 0){
         const b_query = `
         INSERT INTO tbl_branch (branch_name, created_at, updated_at, is_exist)
-        VALUES ('No Branch',NOW(),NOW(),TRUE);`;
+        VALUES (No Branch,NOW(),NOW(),TRUE);`;
         const[b_rows,b_fields] = await connect.execute<Branch[]>(b_query);
       }else{
 
@@ -41,58 +41,42 @@ export async function POST(request: NextRequest) {
       });
     }
   }
-  else{
-    branch_id = branch.toString();
-  }
-
-  try{
-   const test_query = `
-   SELECT location_name, branch_name
-   FROM tbl_location
-   LEFT JOIN tbl_branch ON tbl_location.branch_id = tbl_branch.branch_id
-   WHERE location_name = ? AND tbl_location.branch_id = ? AND tbl_location.is_exist=true;`; 
-   const [test_rows, test_fields] = await connect.execute<Test[]>(test_query,
-   [location,
-    branch_id]
-   );
-   if(test_rows.length>0){
-    const text_response =`Sorry, "${location}" already exist in "${test_rows[0].branch_name}". Please try again.`;
-    return NextResponse.json({
-      status:501,
-      statusText: text_response
-    })
-   }
-  }catch(e){
-    console.log(e);
-    return NextResponse.json({
-      status:50,
-      statusText: "Something went wrong. Please contact Adminstrator"
-    })
-  }
-
+    
   try {
-    const query = "INSERT INTO tbl_location (location_name,branch_id) VALUES (?,?)";
-
+    const query = 
+    `INSERT INTO tbl_user
+    (uuid,username, email, password, first_name, middle_name, last_name, branch_id, created_at, updated_at, is_exist) 
+    VALUES (UUID(),? ,? ,?, ?, ?, ?, ?, NOW(), NOW(), true)`;
     const [rows, fields] = await connect.execute<ResultSetHeader>(query, [
-      location,
+      username,
+      email,
+      hash_password,
+      first_name,
+      middle_name,
+      last_name,
       branch_id
     ]);
     if (rows.affectedRows == 1) {
       connect.commit();
       return NextResponse.json({
         status: 200,
-        statusText: "Location created successfully.",
+        statusText: "User created successfully.",
       });
     } else {
       return NextResponse.json({
         status: 500,
         statusText:
-          "Something went wrong while adding location. Please try again.",
+          "Something went wrong while creating User. Please try again.",
       });
     }
   } catch (error) {
     console.log(error);
     connect.rollback();
+    return NextResponse.json({
+        status: 500,
+        statusText:
+          "Something went wrong while creating User. Contact Administrator",
+      });
   } finally {
     pool.releaseConnection(connect);
   }

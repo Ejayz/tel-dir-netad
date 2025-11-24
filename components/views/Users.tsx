@@ -1,27 +1,27 @@
 "use client";
 
-import { FaPlus, FaArrowDownAZ, FaArrowDownZA, FaSort  } from "react-icons/fa6";
+import { FaPlus, FaSortDown, FaSort, FaSortUp, FaOldRepublic } from "react-icons/fa6";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
-import { AddGroupModal } from "./Modals/Group/AddGroupModal";
-import { EditGroupModal } from "./Modals/Group/EditGroup";
-import { RemoveGroupModal } from "./Modals/Group/RemoveGroup";
-import { AddDepartmentModal } from "./Modals/Department/AddDepartmentModal";
+import { RiBillLine, RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
+import { AddBranchModal } from "./Modals/Branch/AddBranchModal";
+import { AddUserModal } from "./Modals/Users/AddUserModal";
+import { RemoveUserModal } from "./Modals/Users/RemoveUser";
+import { EditUserModal } from "./Modals/Users/EditUserModal";
 
-export default function Group() {
+export default function User() {
   const [search, setSearch] = useState("");
-  const [group_name, setGroupName] = useState("");
+  const [username, setUsername] = useState("");
   const [page, setPage] = useState(0);
-  const [group_id, setGroupId] = useState(0);
-  const [group_sort, setGroupSort] = useState("group_name ASC");
-  const [department_sort, setDepartmentSort] = useState("")
-  const [department_name, setDepartmentName]= useState("");
-  const [department_id, setDepartmentId] = useState(-1);
-  const [department_list, setDepartmentList] = useState({data:[{department_id : 0, department_name : ""}]})
+  const [uuid, setUuid] = useState("");
+  const [users_sort, setUserSort] = useState("username ASC");
+  const [branch_data, setBranchData] = useState({ data: [{ branch_id: 0, branch_name: "No Branch" }] });
+  const [branch, setBranch] = useState(0);
+  const [user_data, setUserData] = useState({ uuid: "", username: "", email: "", first_name: "", middle_name: "", last_name: "", branch_id: 0 })
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: [search, group_name, group_sort, department_sort, page],
+    queryKey: [search, users_sort, page],
+    staleTime:0,
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -30,64 +30,68 @@ export default function Group() {
       };
       let bodyContent = JSON.stringify({
         search: search,
-        group_sort: group_sort,
-        department_sort: department_sort,
+        users_sort: users_sort,
         page: page,
       });
 
-      let response = await fetch("/api/authenticated/group/list_group", {
+      let response = await fetch("/api/authenticated/users/list_users", {
         method: "POST",
         headers: headersList,
         body: bodyContent,
+        cache: 'no-store'
       });
 
       let data = await response.json();
+      console.log(data);
       return data;
     },
   });
-    const { error:d_error, data:d_data, isFetching:d_isFetching, isError:d_isError, isSuccess:d_isSuccess , refetch:d_refetch} = useQuery({
-    queryKey:[],
+
+  const { error: b_error, data: b_data, isFetching: b_isFetching, isError: b_isError, isSuccess: b_isSuccess, refetch: b_refetch } = useQuery({
+    queryKey: [branch_data],
     queryFn: async () => {
+      console.log(page);
       let headersList = {
         Accept: "*/*",
         "User-Agent": "Thunder Client (https://www.thunderclient.com)",
         "Content-Type": "application/json",
       };
       let bodyContent = JSON.stringify({
+        orderby: "ASC",
+        search: search,
+        column_name: "branch_name",
+        page: page,
       });
 
-      let response = await fetch("api/authenticated/department/list_department_only",{
+      let response = await fetch("/api/authenticated/branch/list_branch", {
         method: "POST",
         headers: headersList,
         body: bodyContent,
       });
+
       let data = await response.json();
-      setDepartmentList(data);
+      setBranchData(data);
       return data;
-      }
+    },
   });
-
-
-
+  // console.log(data);
   return (
     <div className="w-11/12 mx-auto">
-      
-      <AddGroupModal 
-      FetchList={refetch} 
-      department_list={department_list}/>
-      <AddDepartmentModal FetchList={d_refetch} />
-      <EditGroupModal
-      FetchList={refetch}
-      group_id={group_id}
-      group_name={group_name}
-      department_name={department_name}
-      department_id ={department_id}
-      department_list={department_list}/>
-      <RemoveGroupModal
-      FetchList={refetch}
-      group_id={group_id}
-      group_name={group_name}
+      <AddBranchModal
+        FetchList={b_refetch} />
+      <AddUserModal
+        FetchList={refetch}
+        branch_data={branch_data} />
+      <RemoveUserModal
+        FetchList={refetch}
+        uuid={uuid}
+        username={username}
+        branch_id={branch}
       />
+      <EditUserModal
+        FetchList={refetch}
+        user_data={user_data}
+        branch_data={branch_data} />
       <div>
         <div className="breadcrumbs text-sm">
           <ul>
@@ -95,7 +99,7 @@ export default function Group() {
               <a>Dashboard</a>
             </li>
             <li>
-              <a>Group Management</a>
+              <a>User Management</a>
             </li>
           </ul>
         </div>
@@ -130,118 +134,82 @@ export default function Group() {
           <kbd className="kbd kbd-sm">⌘</kbd>
           <kbd className="kbd kbd-sm">K</kbd>
         </label>
-         <button className="btn ml-10"
-          onClick={() => {
-            setGroupSort("");
-            setDepartmentSort("");
-            setDepartmentSort("");
-            setSearch("");
-          }
 
-          }
-        >
-          Reset Filter
-        </button>
         <div className="flex-5 flex flex-col items-end">
           <button
             onClick={() => {
-              // setDepartmentList(d_data);
               (
-                document.getElementById("AddGroup") as HTMLDialogElement
+                document.getElementById("AddUser") as HTMLDialogElement
               ).showModal();
             }}
             className="btn items rounded-md btn-outline btn-primary"
           >
             <FaPlus />
-            New Group
+            New User
           </button>
         </div>
       </div>
       <div className="divider"></div>
       <div className="overflow-x-auto w-11/12 mx-auto">
-        <table className="table table-zebra text-center text-lg">
+        <table className="table table-zebra text-center text-md">
           {/* head */}
           <thead
-            className={`${isFetching ? "invisible" : "table-header-group"} text-lg`}
+            className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
-            <tr className="">
-              <th>ID</th>
-
-              <th // Group
+            <tr className="text-md">
+              <th>#</th>
+              <th // User
                 className=" cursor-pointer w-1/3"
                 onClick={() => {
-                  switch (group_sort) {
+                  switch (users_sort) {
                     case "":
-                      setGroupSort("group_name ASC");
+                      setUserSort("username ASC");
                       break;
-                    case "group_name ASC":
-                      setGroupSort("group_name DESC");
+                    case "username ASC":
+                      setUserSort("username DESC");
                       break;
-                    case "group_name DESC":
-                      setGroupSort("");
+                    case "username DESC":
+                      setUserSort("");
                       break;
                   }
                 }}
               >
                 <div className="flex flex-row justify-center">
-                  Group
-                  {group_sort == "" ? (
+                  User Name
+                  {users_sort == "" ? (
                     <FaSort className="my-auto mx-2" />
-                  ) : group_sort == "group_name ASC" ? (
-                    <FaArrowDownAZ className="my-auto mx-2" />
+                  ) : users_sort == "username ASC" ? (
+                    <FaSortUp className="my-auto mx-2" />
                   ) : (
-                    <FaArrowDownZA className="my-auto mx-2" />
+                    <FaSortDown className="my-auto mx-2" />
                   )}
                 </div>
               </th>
-              <th // Department
-                className=" cursor-pointer"
-                onClick={() => {
-                  switch (department_sort) {
-                    case "":
-                      setDepartmentSort("department_name ASC");
-                      break;
-                    case "department_name ASC":
-                      setDepartmentSort("department_name DESC");
-                      break;
-                    case "department_name DESC":
-                      setDepartmentSort("");
-                      break;
-                  }
-                }}
-              >
-                <div className="flex flex-row justify-center">
-                  Department
-                  {department_sort == "" ? (
-                    <FaSort className="my-auto mx-2" />
-                  ) : department_sort == "department_name ASC" ? (
-                    <FaArrowDownAZ className="my-auto mx-2" />
-                  ) : (
-                    <FaArrowDownZA className="my-auto mx-2" />
-                  )}
-                </div>
-              </th>
-              <th>locals</th>
+              <th>E-mail</th>
+              <th>Name</th>
+              <th>Branch</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {/* row 1 */}
 
-            {isError || error ? (
+            {isError || error || b_error ? (
               <tr>
+                <td></td>
                 <td colSpan={3} className="font-xl text-center text-error">
                   Something went wrong while we retrieve data.
                 </td>
               </tr>
-            ) : isFetching ? (
+            ) : isFetching || b_isFetching ? (
               <tr>
+                <td></td>
                 <td colSpan={3} className="font-xl text-center text-info">
                   Please wait while we load your data
                   <div className="loading loading-infinity "></div>
                 </td>
               </tr>
-            ) : isSuccess ? (
+            ) : isSuccess || b_isSuccess ? (
               data.status === 404 ? (
                 <tr>
                   <td colSpan={3} className="font-xl text-center text-error">
@@ -253,54 +221,53 @@ export default function Group() {
                   {data.statusText}
                 </td>
               ) : (
-                data.data?.map((group_data: any, index: number) => {
-                  let local_num = group_data.local_list.length;
-                  let local_list = '';
-                  if(local_num){
-                    let i = 0;
-                    while(i<local_num){
-                      local_list += group_data.local_list[i].local +', ';
-                      i++;
-                    }
-                    local_list = local_list.slice(0,local_list.length -2)
+                data.data?.map((user_data: any, index: number) => {
+                  let type = user_data.branch_name || "";
+                  if (user_data.branch_name == "No Branch") {
+                    type = "Admin"
                   }
                   return (
                     <tr key={index} className="hover:bg-secondary hover:font-semibold hover:text-primary-content">
-                      <td>{(page * 10) + index + 1}</td>
-                      <td>{group_data.group_name}</td>
-                      <td>{group_data.department_name}</td>
-                      <td><details>
-                        <summary>{local_num}</summary>
-                        <p>{local_list}</p>
-                        </details></td>
-                      <td>
+                      <td className="w-1/20">{(page * 10) + index + 1}</td>
+                      <td className="w-1/6">{user_data.username}</td>
+                      <td className="w-1/6">{user_data.email}</td>
+                      <td className="w-1/6">{user_data.first_name + " " + user_data.middle_name?.slice(0, 1) + ". " + user_data.last_name}</td>
+                      <td className="w-1/6">{type}</td>
+                      <td className="w-2/20">
                         <div className="flex flex-row gap-3 justify-center">
                           <button
                             onClick={() => {
-                              setGroupId(group_data.group_id);
-                              setGroupName(group_data.group_name);
-                              setDepartmentName(group_data.department_name);
-                              setDepartmentId(group_data.department_id);
+                              setUserData({
+                                uuid: user_data.uuid,
+                                username: user_data.username,
+                                email: user_data.email,
+                                first_name: user_data.first_name,
+                                middle_name: user_data.middle_name,
+                                last_name: user_data.last_name,
+                                branch_id: user_data.branch_id,
+                              });
                               (
                                 document.getElementById(
-                                  "EditGroup"
+                                  "EditUser"
                                 ) as HTMLDialogElement
                               ).showModal();
                             }}
-                            className="btn btn-outline btn-sm rounded-md btn-accent"
+                            className={user_data.current_user ? ("btn hidden btn-outline btn-sm rounded-md btn-accent") : ("btn btn-outline btn-sm rounded-md btn-accent")}
                           >
                             <RiEdit2Fill />
                             Edit
                           </button>
                           <button onClick={() => {
-                            setGroupId(group_data.group_id);
-                            setGroupName(group_data.group_name);
+                            setUsername(user_data.username);
+                            setUuid(user_data.uuid);
+                            setBranch(user_data.branch_id);
                             (
-                                document.getElementById(
-                                  "RemoveGroup"
-                                ) as HTMLDialogElement
-                              ).showModal();
-                          }} className="btn btn-outline btn-sm rounded-md btn-error">
+
+                              document.getElementById(
+                                "RemoveUser"
+                              ) as HTMLDialogElement
+                            ).showModal();
+                          }} className={user_data.current_user ? ("btn hidden btn-outline btn-sm rounded-md btn-error") : ("btn btn-outline btn-sm rounded-md btn-error")}>
                             <RiDeleteBin2Fill />
                             Remove
                           </button>
@@ -308,6 +275,7 @@ export default function Group() {
                       </td>
                     </tr>
                   );
+
                 })
               )
             ) : (
@@ -337,12 +305,12 @@ export default function Group() {
                 }
               }}
               className={`join-item btn ${!isSuccess
-                  ? ""
-                  : data.status == 404
+                ? ""
+                : data.status == 404
+                  ? "btn-disabled"
+                  : data.data.length !== 10
                     ? "btn-disabled"
-                    : data.data.length !== 10
-                      ? "btn-disabled"
-                      : ""
+                    : ""
                 }`}
             >
               »

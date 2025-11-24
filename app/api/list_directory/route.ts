@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 
 
 
-    console.log("list_directory API: ", query);
+    // console.log("list_directory API: ", query);
 
     // console.log(offset_item);
     //Executuion of Query
