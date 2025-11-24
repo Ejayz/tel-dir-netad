@@ -21,7 +21,7 @@ export default function Location({Admin}:{Admin?:boolean}) {
   const [branch_data, setBranchData] = useState({data:[{branch_id:0,branch_name:"No Branch" }]});
 
   const { error, data, isFetching, isError, isSuccess ,refetch} = useQuery({
-    queryKey: [search, location_sort, branch_sort,page],
+    queryKey: ['location',search, location_sort, branch_sort,page],
     queryFn: async () => {
       console.log(page);
       let headersList = {
@@ -49,7 +49,7 @@ export default function Location({Admin}:{Admin?:boolean}) {
   });
 
   const { error:b_error, data:b_data, isFetching:b_isFetching, isError:b_isError, isSuccess:b_isSuccess ,refetch:b_refetch} = useQuery({
-    queryKey: [branch_data],
+    queryKey: ['branch',branch_data],
     queryFn: async () => {
       console.log(page);
       let headersList = {

@@ -53,11 +53,8 @@ export async function POST(req: NextRequest) {
         page * 10,
       ];
       }
-
-    // console.log(query);
-    // console.log(offset_item);
+      console.log("API: List Department.")// do not uncomment. Prvents tanstack from using cache.
     const [rows, fields] = await connection.query<Department[]>(query, query_options);
-    console.log(rows);
     const g_query = `
     SELECT group_id, group_name
     FROM tbl_group
@@ -79,7 +76,6 @@ export async function POST(req: NextRequest) {
       }
       rows[i].group_list = g_rows;
     }
-    // console.dir(rows,{depth:null});
     if (search == "" && rows.length == 0) {
       return NextResponse.json({
         status: 404,

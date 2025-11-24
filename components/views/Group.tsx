@@ -21,7 +21,7 @@ export default function Group() {
   const [department_list, setDepartmentList] = useState({data:[{department_id : 0, department_name : ""}]})
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: [search, group_name, group_sort, department_sort, page],
+    queryKey: ['group',search, group_name, group_sort, department_sort, page],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -46,7 +46,7 @@ export default function Group() {
     },
   });
     const { error:d_error, data:d_data, isFetching:d_isFetching, isError:d_isError, isSuccess:d_isSuccess , refetch:d_refetch} = useQuery({
-    queryKey:[],
+    queryKey:['department'],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",

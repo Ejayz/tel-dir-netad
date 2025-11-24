@@ -90,15 +90,9 @@ export async function POST(req: NextRequest) {
       query_options = offset_item;
     }
 
-
-
-    // console.log("list_local API: ", query);
-
-    // console.log(offset_item);
-    //Executuion of Query
+    console.log("API: List Local"); //Do not comment. this prevents tanstack from using cache.
 
     const [rows, fields] = await connection.query<Local[]>(query, query_options);
-    // console.log(rows);
     if (search == "" && rows.length == 0) {
       return NextResponse.json({
         status: 404,

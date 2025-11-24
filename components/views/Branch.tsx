@@ -19,7 +19,7 @@ export default function Branch() {
   const [branch_id, setBranchId] = useState(0);
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: ["Branch_Group", search, column_name, orderby, page,  id, branch_id],
+    queryKey: ["branch", search, column_name, orderby, page,  id, branch_id],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",

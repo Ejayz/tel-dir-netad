@@ -57,9 +57,7 @@ export async function POST(req: NextRequest) {
         page * 10,
       ];
     }
-
-    // console.log(query);
-    // console.log(offset_item);
+    console.log("API: List Group.") //Do not comment. forces tanstack to pull.
     const [rows, fields] = await connection.query<Group[]>(query, query_options);
     const l_query = `
         SELECT local, location_id
@@ -71,7 +69,6 @@ export async function POST(req: NextRequest) {
       rows[i].local_list = l_rows;
     }
     
-    // console.dir(rows,{depth:null});
     if (search == "" && rows.length == 0) {
     return NextResponse.json({
       status: 404,

@@ -18,7 +18,7 @@ export default function DirectorySearch() {
   const [page, setPage] = useState(0);
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: [search, local_sort, group_sort, department_sort, location_sort, branch_sort, page],
+    queryKey: ['local',search, local_sort, group_sort, department_sort, location_sort, branch_sort, page],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -85,7 +85,7 @@ export default function DirectorySearch() {
           setGroupSort("");
           setDepartmentSort("");
           setLocationSort("");
-          setDepartmentSort("");
+          setBranchSort("");
           setSearch("");
           }
         }

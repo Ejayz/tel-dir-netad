@@ -38,7 +38,7 @@ export async function POST(req:NextRequest){
 
     }
     else if(branch_id == "All"){
-
+        //no filter to get all.
     }else{
         q_filter+="AND branch_id = ?"
         q_val = [branch_id.toString()];

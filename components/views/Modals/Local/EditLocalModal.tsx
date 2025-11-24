@@ -26,6 +26,7 @@ export function EditLocalModal({
   group,
   branch,
   location,
+  Admin,
 
 }: {
   FetchList: any,
@@ -40,6 +41,7 @@ export function EditLocalModal({
   group: {group_id:number, group_name:string},
   branch: {branch_id:number, branch_name:string},
   location: {location_id:number, location_name:string},
+  Admin?:boolean,
 }) {
   const Validation = yup.object({
       local: yup.string()
@@ -51,7 +53,6 @@ export function EditLocalModal({
   let g_array:Select[]=[];
   let b_array:Select[]=[];
   let l_array:Select[]=[];
-
 
   let i=0;
   while(i<department_list.data.length){
@@ -162,12 +163,13 @@ export function EditLocalModal({
                       <SelectInput
                       handleChange={(e) =>{
                         handleChange(e);
+                        console.log(e.target.value);
                       }}
                       label="Group Name"
                       name="group"
                       values={values.group}
                       errors={errors.group}
-                      placeholder="No Group"
+                      placeholder={`${values.department? !g_array.length? "<Empty Department!>":"<Select Group>":"No Group"}`}
                       touched={touched.group}
                       options={g_array}
                       />
@@ -196,7 +198,7 @@ export function EditLocalModal({
                     name="branch"
                     values={values.branch}
                     errors={errors.branch}
-                    placeholder="No Branch"
+                    placeholder={`${Admin?"No Branch":""}`}
                     touched={touched.branch}
                     options={b_array}
                     />
@@ -210,7 +212,7 @@ export function EditLocalModal({
                       name="location"
                       values={values.location}
                       errors={errors.location}
-                      placeholder="No Location"
+                      placeholder={`${values.branch? !l_array.length? "Empty Branch!":"<Select Location>":"No Location"}`}
                       touched={touched.location}
                       options={l_array}
                       />
@@ -260,7 +262,7 @@ export function EditLocalModal({
                       onClick={() => {
                         resetForm();
                         group_filter("");
-                        location_filter("");
+                        if(Admin)location_filter("");
                         (
                           document.getElementById(
                             "EditLocal"
