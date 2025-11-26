@@ -16,7 +16,7 @@ export default function Department() {
   const [department_sort, setDepartmentSort] = useState("department_name ASC");
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: [search, department_sort, page],
+    queryKey: ['department',search, department_sort, page],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",

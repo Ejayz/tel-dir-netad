@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
 
     let offset_item = page * 10;
-
+    console.log("API: List Branch.")// Prevents tanstack query.
     //Executuion of Query
     const [rows, fields] = await connection.query<Local[]>(query, [
       `%${search}%`,

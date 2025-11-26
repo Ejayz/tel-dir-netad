@@ -14,8 +14,8 @@ export function RemoveUserModal({
         <>
             <dialog id="RemoveUser" ref={RemoveUser} className="modal">
                 <div className="modal-box">
-                    <h3 className="text-lg font-bold">Do you want to remove user:</h3>
-                    <p className="py-4 font-semibold">{username + " ?"}</p>
+                    <h3 className="text-lg font-bold">Remove:</h3>
+                    <p className="text-md">Do you want to remove user <u><b>{username}</b></u>?</p>
                     <Formik
                         initialValues={{
                         }}

@@ -186,7 +186,8 @@ export function SelectInput({
   placeholder,
   errors,
   touched,
-  options
+  options,
+  initValue,
 }: {
   values: any;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -195,7 +196,8 @@ export function SelectInput({
   placeholder?: string;
   errors?: any;
   touched?: any;
-  options:Select[]
+  options:Select[];
+  initValue?: any;
 }) {
   return (
     <div className="form-control">
@@ -212,7 +214,8 @@ export function SelectInput({
         } `}
         placeholder={placeholder}
       >
-        <option value={""}>{placeholder}</option>
+        {placeholder? <option value={`${initValue? initValue:""}`}>{placeholder}</option>:<></>}
+        
          {options &&
           options.length > 0 &&
           options.map((value, index) => (

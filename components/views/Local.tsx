@@ -1,9 +1,9 @@
 "use client";
 import { BsFillTelephoneOutboundFill } from "react-icons/bs";
 import { AddLocalModal } from "./Modals/Local/AddLocalModal";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import {  FaSort, FaArrowDownAZ, FaArrowDownZA, FaArrowDown19, FaArrowDown91} from "react-icons/fa6";
+import {  FaSort, FaArrowDownAZ, FaArrowDownZA, FaArrowDown19, FaArrowDown91, FaSpinner} from "react-icons/fa6";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
 import { RemoveLocalModal } from "./Modals/Local/RemoveLocal";
 import { AddGroupModal } from "./Modals/Group/AddGroupModal";
@@ -26,7 +26,7 @@ export default function Local({Admin}:{Admin?:Boolean}) {
   const [group, setGroup] = useState({group_id: 0, group_name: ""})
   const [branch, setBranch] = useState({branch_id: 0, branch_name: ""})
   const [location, setLocation] = useState({location_id:0, location_name:""});
-  const [location_filter, setlocationFilter] = useState("");
+  const [location_filter, setLocationFilter] = useState("");
   const [group_filter, setGroupFilter] = useState("");
   const [group_list, setGroupList] = useState({data:[{group_id:0,group_name:""}]});
   const [department_list, setDepartmentList] = useState({data:[{department_id: 0 , department_name: ""}]});
@@ -35,16 +35,17 @@ export default function Local({Admin}:{Admin?:Boolean}) {
   //UDF
   const changeGroup = (value:string) =>{
     setGroupFilter(value);
-    g_refetch;
+    g_refetch();
   }
   const changeLocation = (value:string) =>{
-    setlocationFilter(value);
-    l_refetch;
-  }
+    setLocationFilter(value);
+    l_refetch();
+  } 
 
-
-  const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: [search, local_sort, group_sort, department_sort, location_sort, branch_sort, page],
+  const { error:local_error, data:local_data, isFetching:local_isFetching, isError:local_isError, isSuccess:local_isSuccess, refetch:local_refetch } = useQuery({
+    queryKey: ['local',search, local_sort, group_sort, department_sort, location_sort, branch_sort, page],
+    structuralSharing: false,
+    staleTime: 0,
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -69,9 +70,10 @@ export default function Local({Admin}:{Admin?:Boolean}) {
       let data = await response.json();
       return data;
     },
+    
   });
   const { error:d_error, data:d_data, isFetching:d_isFetching, isError:d_isError, isSuccess:d_isSuccess, refetch:d_refetch } = useQuery({
-    queryKey: [department_list],
+    queryKey: ['department'],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -100,7 +102,7 @@ export default function Local({Admin}:{Admin?:Boolean}) {
     },
   });
   const { error:g_error, data:g_data, isFetching:g_isFetching, isError:g_isError, isSuccess:g_isSuccess, refetch:g_refetch } = useQuery({
-    queryKey: [group_list,group_filter],
+    queryKey: ['group',group_filter],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -108,7 +110,7 @@ export default function Local({Admin}:{Admin?:Boolean}) {
         "Content-Type": "application/json",
       };
       let bodyContent = JSON.stringify({
-        department_id:group_filter
+        department_id:group_filter,
       });
 
       let response = await fetch("/api/authenticated/group/list_group_only", {
@@ -123,7 +125,7 @@ export default function Local({Admin}:{Admin?:Boolean}) {
     },
   });
   const { error:b_error, data:b_data, isFetching:b_isFetching, isError:b_isError, isSuccess:b_isSuccess ,refetch:b_refetch} = useQuery({
-    queryKey: [branch_list],
+    queryKey: ['branch'],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -145,11 +147,14 @@ export default function Local({Admin}:{Admin?:Boolean}) {
 
       let data = await response.json();
       setBranchList(data);
+      if(!Admin){
+        setLocationFilter(data.data[0].branch_id.toString());
+      }
       return data;
     },
   });
   const { error:l_error, data:l_data, isFetching:l_isFetching, isError:l_isError, isSuccess:l_isSuccess, refetch:l_refetch } = useQuery({
-    queryKey: [location_list,location_filter],
+    queryKey: ['location',location_filter],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -157,7 +162,7 @@ export default function Local({Admin}:{Admin?:Boolean}) {
         "Content-Type": "application/json",
       };
       let bodyContent = JSON.stringify({
-        branch_id:location_filter
+        branch_id:location_filter,
       });
 
       let response = await fetch("/api/authenticated/location/list_location_only", {
@@ -165,9 +170,9 @@ export default function Local({Admin}:{Admin?:Boolean}) {
         headers: headersList,
         body: bodyContent,
       });
-      
       let data = await response.json();
       setLocationList(data);
+      
       return data;
     },
   });
@@ -186,18 +191,20 @@ export default function Local({Admin}:{Admin?:Boolean}) {
       FetchList={d_refetch}/>
       <AddGroupModal
       FetchList={g_refetch}
-      department_list={department_list}/>
+      department_list={department_list}
+      defDepartment={group_filter}/>
       <AddLocalModal 
-      FetchList={refetch}
+      FetchList={local_refetch}
       group_list={group_list}
       group_filter={changeGroup}
       location_filter={changeLocation}
       department_list={department_list}
       branch_list={branch_list}
       location_list={location_list}
+      Admin={Admin?true:false}
       />
       <EditLocalModal
-      FetchList={refetch}
+      FetchList={local_refetch}
       group_list={group_list}
       group_filter={changeGroup}
       location_filter={changeLocation}
@@ -209,9 +216,10 @@ export default function Local({Admin}:{Admin?:Boolean}) {
       branch={branch}
       group={group}
       location={location}
+      Admin={Admin?true:false}
       />
       <RemoveLocalModal
-      FetchList = {refetch}
+      FetchList = {local_refetch}
       local = {local}
       />
 
@@ -264,13 +272,22 @@ export default function Local({Admin}:{Admin?:Boolean}) {
             setGroupSort("");
             setDepartmentSort("");
             setLocationSort("");
-            setDepartmentSort("");
+            setBranchSort("");
             setSearch("");
           }
 
           }
         >
           Reset Filter
+        </button>
+        <button className="btn ml-10"
+          onClick={() => {
+            local_refetch();
+          }
+
+          }
+        >
+          <FaSpinner></FaSpinner>
         </button>
 
         <div className="flex-5 flex flex-col items-end">
@@ -290,7 +307,7 @@ export default function Local({Admin}:{Admin?:Boolean}) {
         <table className="table table-zebra text-center text-lg">
           {/* head */}
           <thead
-            className={`${isFetching ? "invisible" : "table-header-group"} text-lg`}
+            className={"table-header-group text-lg"}
           >
             <tr>
               <th>#</th>
@@ -436,13 +453,13 @@ export default function Local({Admin}:{Admin?:Boolean}) {
           <tbody>
             {/* row 1 */}
 
-            {isError || error ? (
+            {local_isError || local_error ? (
               <tr>
                 <td colSpan={3} className="font-xl text-center text-error">
                   Something went wrong while we retrieve data.
                 </td>
               </tr>
-            ) : isFetching ? (
+            ) : local_isFetching ? (
               <tr>
                 <td></td>
                 <td></td>
@@ -452,19 +469,19 @@ export default function Local({Admin}:{Admin?:Boolean}) {
                   <div className="loading loading-infinity "></div>
                 </td>
               </tr>
-            ) : isSuccess ? (
-              data.status === 404 ? (
+            ) : local_isSuccess ? (
+              local_data.status === 404 ? (
                 <tr>
                   <td colSpan={3} className="font-xl text-center text-error">
-                    {data.statusText}
+                    {local_data.statusText}
                   </td>
                 </tr>
-              ) : data.status === 500 ? (
+              ) : local_data.status === 500 ? (
                 <td colSpan={3} className="font-xl text-center text-error">
-                  {data.statusText}
+                  {local_data.statusText}
                 </td>
               ) : (
-                data.data?.map((local_data: any, index: number) => {
+                local_data.data?.map((local_data: any, index: number) => {
                   return (
                     <tr key={index} className="hover:bg-secondary hover:font-semibold hover:text-primary-content">
                       <td>{(page * 10) + index + 1}</td>
@@ -478,13 +495,14 @@ export default function Local({Admin}:{Admin?:Boolean}) {
                         <div className="flex flex-row gap-3 justify-center">
                           <button
                             onClick={() => {
+                              console.log(local_data);
                               setDepartment({department_id:parseInt(local_data.department_id),department_name:local_data.department_name});
                               setBranch({branch_id:parseInt(local_data.branch_id),branch_name:local_data.branch_name});
                               setGroup({group_id:parseInt(local_data.group_id),group_name:local_data.group_name});
                               setLocation({location_id:parseInt(local_data.location_id), location_name:local_data.location_name});
                               setLocal(local_data.local);
-                              setGroupFilter(local_data.department_id);
-                              setlocationFilter(local_data.branch_id);
+                              setGroupFilter(local_data.department_id.toString());
+                              setLocationFilter(local_data.branch_id.toString());
                               (
                               document.getElementById(
                                   "EditLocal"
@@ -536,15 +554,15 @@ export default function Local({Admin}:{Admin?:Boolean}) {
             <button className="join-item btn">Page {page + 1}</button>
             <button
               onClick={() => {
-                if (data.data.length >= 10) {
+                if (local_data.data.length >= 10) {
                   setPage(page + 1);
                 }
               }}
-              className={`join-item btn ${!isSuccess
+              className={`join-item btn ${!local_isSuccess
                 ? ""
-                : data.status == 404
+                : local_data.status == 404
                   ? "btn-disabled"
-                  : data.data.length !== 10
+                  : local_data.data.length !== 10
                     ? "btn-disabled"
                     : ""
                 }`}

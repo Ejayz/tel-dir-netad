@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
   const connect = await pool.getConnection();
   await connect.beginTransaction();
   let q_value = [""]
-  
   try{
     let g_id = group_id;
     let l_id = location_id;

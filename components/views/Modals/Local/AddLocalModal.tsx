@@ -21,6 +21,7 @@ export function AddLocalModal({
   department_list,
   branch_list,
   location_list,
+  Admin,
 }: {
   FetchList: any,
   group_list: { data: { group_id: number, group_name: string }[] },
@@ -29,6 +30,7 @@ export function AddLocalModal({
   department_list: { data: { department_id: number, department_name: string }[] },
   branch_list: {data:{branch_id: number, branch_name: string}[]},
   location_list: {data:{location_id:number, location_name: string}[]},
+  Admin: boolean,
 }) {
   const Validation = yup.object({
       local: yup.string()
@@ -40,6 +42,8 @@ export function AddLocalModal({
   let g_array:Select[]=[];
   let b_array:Select[]=[];
   let l_array:Select[]=[];
+  // if(!Admin)location_filter(branch_list.data[0].branch_id.toString());
+
 
 
   let i=0;
@@ -74,7 +78,7 @@ export function AddLocalModal({
                 local:"",
                 department: "",
                 group: "",
-                branch:"",
+                branch: Admin? "":branch_list.data[0].branch_id.toString(),
                 location:"",
               }}
               onSubmit={async (values, action) => {
@@ -105,7 +109,14 @@ export function AddLocalModal({
                   toast.success(data.statusText);
                   Dialog.current?.close();
                   action.resetForm();
+                  group_filter("");
+                  if(Admin)location_filter("");
                   FetchList();
+                  (
+                    document.getElementById(
+                        "AddLocal"
+                    ) as HTMLDialogElement
+                  ).close();
                 } else {
                   toast.error(data.statusText);
                 }
@@ -155,7 +166,7 @@ export function AddLocalModal({
                       name="group"
                       values={values.group}
                       errors={errors.group}
-                      placeholder="No Group"
+                      placeholder={`${values.department? !g_array.length?"<Empty Department!>":"<Select Department>":"No Group"}`}
                       touched={touched.group}
                       options={g_array}
                       />
@@ -184,9 +195,10 @@ export function AddLocalModal({
                     name="branch"
                     values={values.branch}
                     errors={errors.branch}
-                    placeholder="No Branch"
+                    placeholder={`${Admin?"No Branch":""}`}
                     touched={touched.branch}
                     options={b_array}
+                    initValue={`${Admin?"":""}`}
                     />
                   <div className="items-end flex justify-between">
                     <div className="w-4/5 pr-1">
@@ -198,7 +210,7 @@ export function AddLocalModal({
                       name="location"
                       values={values.location}
                       errors={errors.location}
-                      placeholder="No Location"
+                      placeholder={`${values.branch? !l_array.length?"<Empty Branch!>":"<Select Location>":"No location"}`}
                       touched={touched.location}
                       options={l_array}
                       />
@@ -236,7 +248,7 @@ export function AddLocalModal({
                       onClick={() => {
                         resetForm();
                         group_filter("");
-                        location_filter("");
+                        if(Admin)location_filter("");
                         (
                           document.getElementById(
                             "AddLocal"

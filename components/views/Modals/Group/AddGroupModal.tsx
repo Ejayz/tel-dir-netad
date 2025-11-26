@@ -14,10 +14,12 @@ interface Select {
 
 export function AddGroupModal({ 
   FetchList, 
-  department_list 
+  department_list,
+  defDepartment, 
 }: { 
   FetchList: any ,
-  department_list:{data:{department_id:number , department_name: string}[]}
+  department_list:{data:{department_id:number , department_name: string}[]},
+  defDepartment?:string,
 }) {
 
 let d_array:Select[] = [];
@@ -42,9 +44,10 @@ let d_array:Select[] = [];
         <div className="modal-box">
           <h3 className="text-lg font-bold">Add Group</h3>
             <Formik
+            enableReinitialize={true}
               initialValues={{
                 group: "",
-                department: "No Department",
+                department: defDepartment?defDepartment:"No Department",
               }}
               onSubmit={async (values, action) => {
 

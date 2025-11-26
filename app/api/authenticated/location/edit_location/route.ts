@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
        return NextResponse.json({
          status: 500,
          statusText:
-           "Something went wrong while adding location. Please contact Administrator",
+           "Something went wrong while editing location. Please contact Administrator",
        });
      }
    }

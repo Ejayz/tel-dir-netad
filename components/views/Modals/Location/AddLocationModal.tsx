@@ -34,7 +34,7 @@ export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList:
           <Formik
             initialValues={{
               location: "",
-              branch: "",
+              branch: isAdmin? "":branch_data.data[0].branch_id.toString(),
             }}
             onSubmit={async (values, action) => {
               let headersList = {
@@ -98,7 +98,7 @@ export function AddLocationModal({ FetchList, branch_data, Admin }: { FetchList:
                       name="branch"
                       values={values.branch}
                       errors={errors.branch}
-                      placeholder="No Branch"
+                      placeholder={`${Admin?"No Branch":""}`}
                       touched={touched.branch}
                       options={b_array}
                       />

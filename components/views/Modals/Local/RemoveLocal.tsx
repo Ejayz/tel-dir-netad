@@ -13,8 +13,9 @@ export function RemoveLocalModal({
         <>
             <dialog id="RemoveLocal" ref={RemoveLocal} className="modal">
                 <div className="modal-box">
-                    <h3 className="text-lg font-bold">Do you want to remove:</h3>
-                    <p className="py-4 font-semibold">{local.toString() + " ?"}</p>
+                    <h2 className="text-lg font-bold">Remove:</h2>
+                    <br></br>
+                    <h4 className="text-md">Do you want to remove local number <u><b>{local.toString()}</b></u>?</h4>
                     <Formik
                         initialValues={{
                         }}

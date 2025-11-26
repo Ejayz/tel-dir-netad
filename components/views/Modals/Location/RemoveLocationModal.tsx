@@ -14,8 +14,9 @@ export function RemoveLocationModal({
         <>
             <dialog id="RemoveLocation" ref={RemoveLocation} className="modal">
                 <div className="modal-box">
-                    <h3 className="text-lg font-bold">Do you want to remove:</h3>
-                    <p className="py-4 font-semibold">{location_name + " ?"}</p>
+                    <h3 className="text-lg font-bold">Remove:</h3>
+                    <br></br>
+                    <p className="text-md">Do you want to remove <u><b>{location_name}</b></u>?</p>
                     <Formik
                         initialValues={{
                         }}
