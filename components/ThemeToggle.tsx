@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { getcookieValue } from "@/libs/Tools";
 
 const THEME_KEY = "theme";
 
@@ -11,25 +12,22 @@ export default function ThemeToggle() {
   const [isChecked, setIsChecked] = useState(false);
   // let [ctheme,setCtheme] = useState('light')
 
+  useEffect(() => { // run once per load
+    const cookies = document.cookie;
+    if(!getcookieValue(cookies,'theme')){ //check if cookies have theme value
+       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; // if no theme, check if user prefers dark.
+       if(prefersDark){
+        toggle();
+       }
+    }
+  },[])
+
   useEffect(() => {
 
     const cookies = document.cookie; //get Cookies
-    const columns = cookies.split(";"); // split strings to array based on ;
-    for (let i = 0; i < columns.length; i++) { //check all array
-      const val = columns[i];
-      if (val.includes(THEME_KEY)) { //check each array if it contains the word 'theme'
-        if(val.includes("dark")){ //if so, check the array for the word dark
-          theme = "dark"  //if so, set theme to dark
-          setIsChecked(true); // set checked to true 
-          document.documentElement.setAttribute("data-theme", theme);
-        }
-        else{
-          theme = "light" //if not, default to light
-          setIsChecked(false);
-        }
-        
-      }// no need to else light mode as light is the initial state.
-    }
+    setTheme(getcookieValue(cookies,'theme'));
+    setIsChecked( theme === 'dark');
+    
   },)
 
   const toggle = () => {
@@ -42,7 +40,6 @@ export default function ThemeToggle() {
 
 
   return (
-    //swap swap-rotate
     <label className=" swap swap-rotate rounded-md p-1 hover:bg-gray-600">
       <input
         type="checkbox"

@@ -11,14 +11,16 @@
   --foreground: #171717 ;
   --btn-color: #1f429b ;
   --color-secondary: #1f429b ;
+  --color-accent: #0FD952 ;
 }
 
 @plugin "daisyui/theme" {
   name: "dark";
-  --background: #0a0a0a;
+  --background: #050510;
   --foreground: #ededed;
-  --btn-color: #1f429b;
+  --btn-color: #03a6df;
   --color-secondary: #03a6df;
+  --color-accent: #F0E811 ;
 }
 
 @theme inline {

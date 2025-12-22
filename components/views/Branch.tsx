@@ -5,10 +5,9 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FaSortDown } from "react-icons/fa";
 import { RiDeleteBin2Fill, RiEdit2Fill } from "react-icons/ri";
-import UpdateLocationModal from "./Modals/Location/UpdateLocationModal";
 import { AddBranchModal } from "./Modals/Branch/AddBranchModal";
 import UpdateBranchModal from "./Modals/Branch/UpdateBranchModal";
-import { toast } from "react-toastify";
+import { RemoveBranchModal } from "./Modals/Branch/RemoveBranchModal";
 
 export default function Branch() {
   const [search, setSearch] = useState("");
@@ -16,9 +15,11 @@ export default function Branch() {
   const [orderby, setOrderBy] = useState("ASC");
   const [page, setPage] = useState(0);
   const [id, setId] = useState();
+  const [branch_name, setBranchName] = useState("");
+  const [branch_id, setBranchId] = useState(0);
 
   const { error, data, isFetching, isError, isSuccess, refetch } = useQuery({
-    queryKey: ["Branch_Group", search, column_name, orderby, page],
+    queryKey: ["branch", search, column_name, orderby, page,  id, branch_id],
     queryFn: async () => {
       let headersList = {
         Accept: "*/*",
@@ -29,7 +30,7 @@ export default function Branch() {
         orderby: orderby,
         search: search,
         column_name: column_name,
-        page: page,
+        page: page
       });
 
       let response = await fetch("/api/authenticated/branch/list_branch", {
@@ -46,7 +47,11 @@ export default function Branch() {
   return (
     <div className="w-11/12 mx-auto">
       <AddBranchModal FetchList={refetch} />
-      <UpdateBranchModal FetchList={refetch} data_id={id} setId={setId} />
+      <UpdateBranchModal FetchList={refetch} branch_id={branch_id} branch_name={branch_name} /> 
+      <RemoveBranchModal 
+      FetchList={refetch}
+      branch_id={branch_id}
+      branch_name={branch_name}/>
       <div>
         <div className="text-sm breadcrumbs">
           <ul>
@@ -106,19 +111,19 @@ export default function Branch() {
       </div>
       <div className="divider"></div>
       <div className="w-11/12 mx-auto overflow-x-auto">
-        <table className="table text-center table-zebra">
+        <table className="table text-center table-zebra text-lg">
           {/* head */}
           <thead
             className={`${isFetching ? "invisible" : "table-header-group"}`}
           >
-            <tr>
-              <th>ID</th>
+            <tr className="text-lg">
+              <th>#</th>
 
-              {column_name == "location_name" ? (
+              {column_name == "branch_name" ? (
                 <th
                   className="cursor-pointer "
                   onClick={() => {
-                    setColumnName("location_name");
+                    setColumnName("branch_name");
                     if (orderby == "ASC") {
                       setOrderBy("DESC");
                     } else {
@@ -127,7 +132,7 @@ export default function Branch() {
                   }}
                 >
                   <div className="flex flex-row justify-center">
-                    Group Name
+                    Branch Name
                     {orderby == "ASC" ? (
                       <FaSortUp className="mx-2 my-auto" />
                     ) : (
@@ -139,12 +144,14 @@ export default function Branch() {
                 <th
                   className="cursor-pointer"
                   onClick={() => {
-                    setColumnName("location_name");
+                    setColumnName("branch_name");
                   }}
-                >
-                  Group Name
+                >Branch Name
+                  
                 </th>
               )}
+              <th>Locations</th>
+              <th>Locals</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -181,15 +188,18 @@ export default function Branch() {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td>{data.branch_name}</td>
+                      <td></td>
+                      <td></td>
                       <td>
                         <div className="flex flex-row justify-center gap-3">
                           <button
                             onClick={() => {
                               setId(data.branch_id);
-
+                              setBranchId(data.branch_id);
+                              setBranchName(data.branch_name);
                               (
                                 document.getElementById(
-                                  "UpdateLocation"
+                                  "UpdateBranch"
                                 ) as HTMLDialogElement
                               ).showModal();
                             }}
@@ -199,35 +209,14 @@ export default function Branch() {
                             Update
                           </button>
                           <button
-                            onClick={async () => {
-                              let headersList = {
-                                Accept: "*/*",
-                                "User-Agent":
-                                  "Thunder Client (https://www.thunderclient.com)",
-                                "Content-Type": "application/json",
-                              };
-
-                              let bodyContent = JSON.stringify({
-                                branch_id: data.branch_id,
-                              });
-
-                              let response = await fetch(
-                                "/api/authenticated/branch/remove_branch",
-                                {
-                                  method: "POST",
-                                  body: bodyContent,
-                                  headers: headersList,
-                                }
-                              );
-
-                              let resp = await response.json();
-
-                              if (resp.status == 200) {
-                                refetch();
-                                toast.success(resp.statusText);
-                              } else {
-                                toast.error(resp.statusText);
-                              }
+                            onClick={() => {
+                              setBranchId(data.branch_id);
+                              setBranchName(data.branch_name);
+                              (
+                                document.getElementById(
+                                  "RemoveBranch"
+                                ) as HTMLDialogElement
+                              ).showModal();
                             }}
                             className="rounded-md btn btn-outline btn-sm btn-error"
                           >

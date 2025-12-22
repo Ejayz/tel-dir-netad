@@ -4,11 +4,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FaRegUserCircle } from "react-icons/fa";
 import { Bounce, ToastContainer } from "react-toastify";
 import ThemeToggle from "./ThemeToggle";
+import Cookies from "js-cookie";  
+import Link from "next/link";
 
 export function Navigations({
   children,
+  Admin
 }: Readonly<{
   children: React.ReactNode;
+  Admin?: boolean;
 }>) {
   const queryClient = new QueryClient();
 
@@ -16,16 +20,20 @@ export function Navigations({
 
   
   return (
-    <div className="drawer">
+    <div className="drawer drawer-end">
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="flex flex-col drawer-content">
         {/* Navbar */}
         <div className="w-full navbar bg-base-300">
-          <div className="flex-none lg:hidden">
+          
+          <div className="flex-1 px-2 mx-2 font-mono font-bold uppercase">
+            Telephone Directory Management
+          </div>
+          <div className="flex-none lg:hidden self-end">
             <label
               htmlFor="my-drawer-3"
               aria-label="open sidebar"
-              className="btn btn-square btn-ghost"
+              className="btn btn-square btn-ghost "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -42,15 +50,12 @@ export function Navigations({
               </svg>
             </label>
           </div>
-          <div className="flex-1 px-2 mx-2 font-mono font-bold uppercase">
-            Telephone Directory Management
-          </div>
           <div className="flex-none hidden lg:block">
             <ThemeToggle />
             <ul className="menu menu-horizontal">
               {/* Navbar menu content here */}
               <li>
-                <a>Dashboard</a>
+                <a href="/dashboard">Dashboard</a>
               </li>
               <li>
                 <details className="z-">
@@ -63,19 +68,19 @@ export function Navigations({
                       <a href="/group">Group</a>
                     </li>
                     <li>
-                      <a>Department</a>
+                      <a href="/department">Department</a>
                     </li>
                     <li>
                       <a href="/location">Location</a>
                     </li>
-                    <li>
+                    <li hidden={!Admin}>
                       <a href="/branch">Branch</a>
                     </li>
                   </ul>
                 </details>
               </li>
-              <li>
-                <a>Users</a>
+              <li hidden={!Admin}>
+                <a href="/users">Users</a>
               </li>
               <li>
                 <a>Account</a>
@@ -105,7 +110,7 @@ export function Navigations({
                     <a>Settings</a>
                   </li>
                   <li>
-                    <a>Logout</a>
+                    <a href="/" onClick={()=>{Cookies.remove("token")}}>Logout</a>
                   </li>
                 </ul>
               </div>
@@ -114,13 +119,13 @@ export function Navigations({
         </div>
         {/* Page content here */}
         <ToastContainer
-          position="top-right"
+          position="top-center"
           autoClose={5000}
           hideProgressBar={false}
           newestOnTop={false}
-          closeOnClick={false}
+          closeOnClick={true}
           rtl={false}
-          pauseOnFocusLoss
+          pauseOnFocusLoss={false}
           draggable
           pauseOnHover
           theme="dark"
@@ -139,12 +144,70 @@ export function Navigations({
         ></label>
         <ul className="min-h-full p-4 menu bg-base-200 w-80">
           {/* Sidebar content here */}
-          <li>
-            <a>Sidebar Item 1</a>
-          </li>
-          <li>
-            <a>Sidebar Item 2</a>
-          </li>
+          <ul className="menu menu-vertical">
+            {/* Navbar menu content here */}
+            <h1>Menu:</h1>
+            <li>
+              <a href="/dashboard">Dashboard</a>
+            </li>
+            <li>
+              <details className="z-">
+                <summary>Management</summary>
+                <ul className="z-10 p-2 rounded-t-none bg-base-100">
+                  <li>
+                    <a href="/local">Local</a>
+                  </li>
+                  <li>
+                    <a href="/group">Group</a>
+                  </li>
+                  <li>
+                    <a href="/department">Department</a>
+                  </li>
+                  <li>
+                    <a href="/location">Location</a>
+                  </li>
+                  <li>
+                    <a href="/branch">Branch</a>
+                  </li>
+                </ul>
+              </details>
+            </li>
+            <li>
+              <a>Users</a>
+            </li>
+            <li>
+              <a>Account</a>
+            </li>
+            <div className="dropdown">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
+                <div className="w-10 rounded-full">
+                  <FaRegUserCircle className="mx-auto my-auto text-3xl" />
+                </div>
+              </div>
+
+              <ul
+                tabIndex={0}
+                className="p-2 mt-3 shadow menu menu-sm dropdown-content bg-base-100 rounded-box z-1 w-52"
+              >
+                <li>
+                  <a className="justify-between">
+                    Profile
+                    <span className="badge">New</span>
+                  </a>
+                </li>
+                <li>
+                  <a>Settings</a>
+                </li>
+                <li>
+                  <a href="/" onClick={()=>{Cookies.remove("token")}}>Logout</a>
+                </li>
+              </ul>
+            </div>
+          </ul>
         </ul>
       </div>
     </div>

@@ -1,71 +1,97 @@
 "use client";
 
-import { Formik, Form } from "formik";
-import { TextInput } from "../../../ui/InputFields";
+import { FaPlus } from "react-icons/fa6";
+import { Formik, Form , Field} from "formik";
+import { TextInput, SelectInput } from "../../../ui/InputFields";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import { useRef } from "react";
-export function AddGroupModal({ FetchList }: { FetchList: any }) {
-  const locationValidation = yup.object({
-    group: yup.string().required(),
+
+interface Select {
+  id:string|number,
+  placeholder:string
+}
+
+export function AddGroupModal({ 
+  FetchList, 
+  department_list,
+  defDepartment, 
+}: { 
+  FetchList: any ,
+  department_list:{data:{department_id:number , department_name: string}[]},
+  defDepartment?:string,
+}) {
+
+let d_array:Select[] = [];
+
+  let i=0;
+  while(i<department_list.data.length){
+    d_array.push({id:department_list.data[i].department_id,placeholder:department_list.data[i].department_name})
+    i++;
+  }
+
+
+  const Validation = yup.object({
+    group: yup.string()
+      .matches(/^[a-zA-Z _-]+$/, 'Sorry. Only letters, underscore and dash can be used.')
+      .required("Empty Name is Invalid"),
   });
-
+ 
   const Dialog = useRef<HTMLDialogElement>(null);
-
   return (
     <>
       <dialog id="AddGroup" ref={Dialog} className="modal">
         <div className="modal-box">
           <h3 className="text-lg font-bold">Add Group</h3>
-          <Formik
-            initialValues={{
-              group: "",
-            }}
-            onSubmit={async (values, action) => {
+            <Formik
+            enableReinitialize={true}
+              initialValues={{
+                group: "",
+                department: defDepartment?defDepartment:"No Department",
+              }}
+              onSubmit={async (values, action) => {
 
+                let headersList = {
+                  Accept: "*/*",
+                  "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+                  "Content-Type": "application/json",
+                };
 
-              console.log("Ok")
-              let headersList = {
-                Accept: "*/*",
-                "User-Agent": "Thunder Client (https://www.thunderclient.com)",
-                "Content-Type": "application/json",
-              };
+                let bodyContent = JSON.stringify({
+                  group_name: values.group,
+                  department_name: values.department,
+                });
 
-              let bodyContent = JSON.stringify({
-                group_name: values.group,
-              });
+                let response = await fetch(
+                  "/api/authenticated/group/add_group",
+                  {
+                    method: "POST",
+                    body: bodyContent,
+                    headers: headersList,
+                  }
+                );
 
-              let response = await fetch(
-                "/api/authenticated/group/add_group",
-                {
-                  method: "POST",
-                  body: bodyContent,
-                  headers: headersList,
+                let data = await response.json();
+                if (data.status == 200) {
+                  toast.success(data.statusText);
+                  Dialog.current?.close();
+                  action.resetForm();
+                  FetchList();
+                } else {
+                  toast.error(data.statusText);
                 }
-              );
-
-              let data = await response.json();
-              console.log(data);
-              if (data.status == 200) {
-                toast.success(data.statusText);
-                Dialog.current?.close();
-                action.resetForm();
-                FetchList();
-              } else {
-                toast.error(data.statusText);
-              }
-            }}
-            validationSchema={locationValidation}
-          >
+              }}
+              validationSchema={Validation}
+            >
             {({
-              values,
-              errors,
-              handleChange,
-              handleSubmit,
-              touched,
-              isSubmitting,
-              resetForm,
-            }) => (
+                values,
+                errors,
+                handleChange,
+                handleSubmit,
+                touched,
+                isSubmitting,
+                resetForm,
+              }) => (
               <Form className="card-body">
                 <fieldset className="fieldset">
                   <TextInput
@@ -77,13 +103,40 @@ export function AddGroupModal({ FetchList }: { FetchList: any }) {
                     placeholder="Group Name"
                     touched={touched.group}
                   ></TextInput>
-
+                  
+                  <div className="items-end flex justify-between">
+                    <div className="w-4/5 pr-1">
+                      <SelectInput
+                      handleChange={handleChange}
+                      label="Department Name"
+                      name="department"
+                      values={values.department}
+                      errors={errors.department}
+                      placeholder="No Department"
+                      touched={touched.department}
+                      options={d_array}
+                      />
+                    </div>
+                    <div className="place-self-end">
+                      <button
+                      type="button"
+                      onClick={()=>{
+                        (
+                            document.getElementById(
+                              "AddDepartment"
+                            ) as HTMLDialogElement
+                          ).showModal();
+                      }}
+                      className="btn btn-outline btn-secondary rounded-md pl-5 "
+                      
+                      ><FaPlus /></button>
+                    </div>
+                    </div>
                   <div className="modal-action">
                     <button
                       type="submit"
-                      className={`btn btn-outline rounded-md ${
-                        !isSubmitting ? "btn-accent" : "btn-disabled"
-                      } `}
+                      className={`btn btn-outline rounded-md ${!isSubmitting ? "btn-accent" : "btn-disabled"
+                        } `}
                     >
                       {!isSubmitting ? (
                         <>Add</>
@@ -112,6 +165,7 @@ export function AddGroupModal({ FetchList }: { FetchList: any }) {
               </Form>
             )}
           </Formik>
+          
         </div>
       </dialog>
     </>

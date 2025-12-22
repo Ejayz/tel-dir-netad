@@ -58,9 +58,7 @@ export async function POST(req: NextRequest) {
         middle_name: rows[0]?.middle_name,
         last_name: rows[0]?.last_name,
         created_at: rows[0]?.created_at,
-        branch_name: rows[0].branch_name,
         branch_id: rows[0].branch_id,
-        branch_city: rows[0].branch_city,
       },
       process.env.KEY || "",
       { expiresIn: "24h" }
